@@ -1,9 +1,12 @@
-const CACHE_NAME = "streaming-app-v1";
+const CACHE_NAME = "streaming-app-v2";
 
 const FILES = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icons/icon-180.png",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", event => {
