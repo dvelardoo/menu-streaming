@@ -2,382 +2,353 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Streaming</title>
 
+  <meta name="description" content="Tus accesos rápidos de streaming en una sola app.">
   <meta name="theme-color" content="#09090b">
 
-  <!-- iOS -->
+  <!-- PWA / iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Streaming">
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="icon" href="./icons/icon-192.png">
 
   <style>
     :root {
       --bg: #09090b;
+      --bg-2: #111116;
+      --surface: rgba(255,255,255,.055);
+      --border: rgba(255,255,255,.10);
       --text: #fff;
-      --secondary: #a1a1aa;
-      --radius: 26px;
+      --muted: #a1a1aa;
+      --muted-2: #71717a;
+      --radius-xl: 28px;
+      --radius-lg: 22px;
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-
       -webkit-tap-highlight-color: transparent;
     }
 
     html {
       color-scheme: dark;
+      background: var(--bg);
     }
 
     body {
+      margin: 0;
       min-height: 100dvh;
-
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "Segoe UI",
-        Roboto,
-        sans-serif;
-
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: var(--text);
-
+      overflow-x: hidden;
       background:
-        radial-gradient(
-          circle at 50% -10%,
-          rgba(124, 58, 237, 0.20),
-          transparent 35%
-        ),
-        linear-gradient(
-          180deg,
-          #09090b 0%,
-          #111116 100%
-        );
+        radial-gradient(circle at 14% -5%, rgba(34,197,94,.18), transparent 28%),
+        radial-gradient(circle at 92% 0%, rgba(124,58,237,.22), transparent 30%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    }
 
-      padding:
-        max(30px, env(safe-area-inset-top))
-        max(18px, env(safe-area-inset-right))
-        max(30px, env(safe-area-inset-bottom))
-        max(18px, env(safe-area-inset-left));
-
-      display: flex;
-      justify-content: center;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .35;
+      background:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 70%);
     }
 
     .app {
-      width: 100%;
-      max-width: 430px;
-
-      animation: appIn .55s ease both;
+      position: relative;
+      width: min(100%, 480px);
+      margin: 0 auto;
+      padding:
+        max(30px, env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        max(34px, env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
     }
 
-    /* HEADER */
-
     .header {
-      padding: 22px 4px 30px;
+      padding: 16px 3px 28px;
+      animation: fadeUp .55s ease both;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
     }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-
+      gap: 8px;
       padding: 7px 11px;
-      margin-bottom: 15px;
-
+      border: 1px solid rgba(255,184,77,.18);
       border-radius: 999px;
-
-      background: rgba(255, 184, 77, .11);
-      border: 1px solid rgba(255, 184, 77, .18);
-
+      background: rgba(255,184,77,.10);
       color: #ffb84d;
-
       font-size: 11px;
       font-weight: 800;
-      letter-spacing: .1em;
+      letter-spacing: .09em;
       text-transform: uppercase;
     }
 
-    .badge::before {
-      content: "";
+    .badge-dot {
       width: 7px;
       height: 7px;
-
-      background: #ffb84d;
       border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 12px currentColor;
+    }
 
-      box-shadow: 0 0 10px #ffb84d;
+    .connection {
+      font-size: 11px;
+      color: var(--muted-2);
     }
 
     h1 {
-      font-size: clamp(38px, 10vw, 46px);
-      line-height: 1;
-      letter-spacing: -.045em;
+      margin: 0;
+      max-width: 360px;
+      font-size: clamp(40px, 11vw, 54px);
+      line-height: .98;
+      letter-spacing: -.055em;
       font-weight: 850;
     }
 
     .subtitle {
-      margin-top: 12px;
-
-      color: var(--secondary);
-
+      margin: 14px 0 0;
+      color: var(--muted);
       font-size: 15px;
       line-height: 1.5;
     }
 
-    /* GRID */
+    .section-title {
+      margin: 4px 3px 12px;
+      color: #d4d4d8;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
 
     .grid {
       display: grid;
-      gap: 16px;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
-
-    /* CARDS */
 
     .card {
       position: relative;
-
-      display: flex;
-      align-items: center;
-
-      min-height: 150px;
-      padding: 22px;
-
+      min-height: 188px;
+      padding: 17px;
       overflow: hidden;
-
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,.11);
-
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
       color: white;
       text-decoration: none;
-
       box-shadow:
-        0 18px 45px rgba(0,0,0,.32),
-        inset 0 1px 0 rgba(255,255,255,.12);
-
+        0 18px 42px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.10);
+      isolation: isolate;
       transform: translateZ(0);
-
       transition:
         transform .18s cubic-bezier(.2,.8,.2,1),
-        filter .18s ease,
-        box-shadow .18s ease;
+        box-shadow .18s ease,
+        filter .18s ease;
+      animation: cardIn .55s ease both;
     }
+
+    .card:nth-child(1) { animation-delay: .06s; }
+    .card:nth-child(2) { animation-delay: .12s; }
+    .card:nth-child(3) { animation-delay: .18s; }
+    .card:nth-child(4) { animation-delay: .24s; }
 
     .card::before {
       content: "";
-
       position: absolute;
       inset: 0;
-
-      background:
-        linear-gradient(
-          125deg,
-          rgba(255,255,255,.16),
-          transparent 40%
-        );
-
+      z-index: -1;
+      background: linear-gradient(135deg, rgba(255,255,255,.17), transparent 42%);
       pointer-events: none;
     }
 
     .card::after {
       content: "";
-
       position: absolute;
-
-      width: 180px;
-      height: 180px;
-
-      right: -70px;
-      bottom: -100px;
-
+      width: 145px;
+      height: 145px;
+      right: -65px;
+      bottom: -70px;
       border-radius: 50%;
-
-      background: rgba(255,255,255,.09);
-
-      filter: blur(3px);
-
+      background: rgba(255,255,255,.13);
+      filter: blur(4px);
+      z-index: -1;
       pointer-events: none;
     }
 
     .card:hover {
-      transform: translateY(-3px);
-
+      transform: translateY(-4px);
       box-shadow:
-        0 24px 55px rgba(0,0,0,.40),
-        inset 0 1px 0 rgba(255,255,255,.14);
+        0 24px 50px rgba(0,0,0,.36),
+        inset 0 1px 0 rgba(255,255,255,.12);
     }
 
     .card:active {
-      transform: scale(.975);
-      filter: brightness(.93);
+      transform: scale(.965);
+      filter: brightness(.94);
     }
 
-    .card:focus-visible {
-      outline: 3px solid white;
+    .card:focus-visible,
+    .install-btn:focus-visible {
+      outline: 3px solid rgba(255,255,255,.9);
       outline-offset: 4px;
     }
 
-    /* COLORES */
+    .football { background: linear-gradient(145deg, #20b954, #087533); }
+    .series   { background: linear-gradient(145deg, #8b5cf6, #4338ca); }
+    .youtube  { background: linear-gradient(145deg, #ef4444, #b91c1c); }
+    .twitch   { background: linear-gradient(145deg, #a855f7, #6d28d9); }
 
-    .football {
-      background:
-        linear-gradient(
-          135deg,
-          #22c55e 0%,
-          #15803d 100%
-        );
-    }
-
-    .series {
-      background:
-        linear-gradient(
-          135deg,
-          #8b5cf6 0%,
-          #4f46e5 100%
-        );
-    }
-
-    /* ICONO */
-
-    .icon-container {
-      position: relative;
-      z-index: 2;
-
-      flex: 0 0 auto;
-
-      width: 62px;
-      height: 62px;
-
-      margin-right: 17px;
-
+    .icon-box {
+      width: 54px;
+      height: 54px;
       display: grid;
       place-items: center;
-
-      border-radius: 19px;
-
+      margin-bottom: 28px;
+      border: 1px solid rgba(255,255,255,.17);
+      border-radius: 18px;
       background: rgba(255,255,255,.15);
-      border: 1px solid rgba(255,255,255,.15);
-
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.15),
-        0 8px 20px rgba(0,0,0,.13);
-
-      font-size: 30px;
-    }
-
-    /* TEXT */
-
-    .content {
-      position: relative;
-      z-index: 2;
-
-      min-width: 0;
-      padding-right: 25px;
+        inset 0 1px 0 rgba(255,255,255,.13),
+        0 8px 18px rgba(0,0,0,.12);
+      font-size: 27px;
     }
 
     .card-title {
-      margin-bottom: 6px;
-
-      font-size: 23px;
-      font-weight: 800;
+      margin: 0 0 6px;
+      font-size: 19px;
+      line-height: 1.1;
+      font-weight: 820;
       letter-spacing: -.025em;
     }
 
-    .description {
-      color: rgba(255,255,255,.83);
-
-      font-size: 13.5px;
-      line-height: 1.45;
+    .card-desc {
+      margin: 0;
+      max-width: 95%;
+      color: rgba(255,255,255,.82);
+      font-size: 12.5px;
+      line-height: 1.38;
     }
-
-    /* ARROW */
 
     .arrow {
       position: absolute;
-      z-index: 2;
-
-      right: 21px;
-      top: 50%;
-
-      transform: translateY(-50%);
-
-      font-size: 32px;
-      font-weight: 300;
-
-      opacity: .8;
-
+      top: 16px;
+      right: 17px;
+      font-size: 25px;
+      opacity: .74;
       transition: transform .18s ease;
     }
 
     .card:hover .arrow {
-      transform: translate(4px, -50%);
+      transform: translateX(3px);
     }
 
-    /* FOOTER */
+    .install {
+      margin-top: 18px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .install.visible {
+      display: flex;
+      animation: fadeUp .4s ease both;
+    }
+
+    .install-copy strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .install-copy span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .install-btn {
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: white;
+      color: #09090b;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
 
     .footer {
-      padding: 27px 4px 15px;
-
-      text-align: center;
-
-      color: #71717a;
-
-      font-size: 11px;
-      letter-spacing: .02em;
+      padding: 28px 3px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted-2);
+      font-size: 10px;
+      letter-spacing: .03em;
     }
 
-    /* ANIMACIONES */
-
-    @keyframes appIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .footer-mark {
+      font-weight: 800;
+      letter-spacing: .12em;
     }
 
-    .card:nth-child(1) {
-      animation: cardIn .5s .08s ease both;
-    }
-
-    .card:nth-child(2) {
-      animation: cardIn .5s .16s ease both;
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes cardIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px) scale(.98);
-      }
+      from { opacity: 0; transform: translateY(14px) scale(.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+    @media (max-width: 360px) {
+      .grid { grid-template-columns: 1fr; }
+      .card { min-height: 145px; }
+      .icon-box { margin-bottom: 18px; }
+    }
+
+    @media (min-width: 700px) {
+      .app { width: min(100%, 720px); }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
         animation: none !important;
         transition: none !important;
       }
@@ -386,104 +357,114 @@
 </head>
 
 <body>
-
   <main class="app">
-
     <header class="header">
-
-      <div class="badge">
-        Streaming
+      <div class="status-row">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Streaming
+        </div>
+        <div class="connection" id="connectionStatus">En línea</div>
       </div>
 
       <h1>¿Qué vemos?</h1>
-
-      <p class="subtitle">
-        Todo tu entretenimiento en un solo sitio.
-      </p>
-
+      <p class="subtitle">Tus accesos de entretenimiento en un solo sitio.</p>
     </header>
 
-    <nav class="grid" aria-label="Servicios">
+    <div class="section-title">Tus accesos</div>
 
-      <!-- FÚTBOL -->
-
-      <a
-        class="card football"
-        href="https://www.fctv33hd.fun/es"
-        aria-label="Abrir fútbol"
-      >
-
-        <div class="icon-container" aria-hidden="true">
-          ⚽
-        </div>
-
-        <div class="content">
-
-          <div class="card-title">
-            Fútbol
-          </div>
-
-          <div class="description">
-            Partidos y retransmisiones en directo.
-          </div>
-
-        </div>
-
-        <span class="arrow" aria-hidden="true">
-          ›
-        </span>
-
+    <nav class="grid" aria-label="Servicios de streaming">
+      <a class="card football" href="https://www.fctv33hd.fun/es" aria-label="Abrir fútbol">
+        <span class="arrow" aria-hidden="true">›</span>
+        <div class="icon-box" aria-hidden="true">⚽</div>
+        <h2 class="card-title">Fútbol</h2>
+        <p class="card-desc">Partidos y retransmisiones en directo.</p>
       </a>
 
-      <!-- SERIES -->
-
-      <a
-        class="card series"
-        href="https://series.ly/"
-        aria-label="Abrir series y películas"
-      >
-
-        <div class="icon-container" aria-hidden="true">
-          🎬
-        </div>
-
-        <div class="content">
-
-          <div class="card-title">
-            Series y pelis
-          </div>
-
-          <div class="description">
-            Series, películas y entretenimiento.
-          </div>
-
-        </div>
-
-        <span class="arrow" aria-hidden="true">
-          ›
-        </span>
-
+      <a class="card series" href="https://series.ly/" aria-label="Abrir series y películas">
+        <span class="arrow" aria-hidden="true">›</span>
+        <div class="icon-box" aria-hidden="true">🎬</div>
+        <h2 class="card-title">Series y pelis</h2>
+        <p class="card-desc">Series, películas y entretenimiento.</p>
       </a>
 
+      <a class="card youtube" href="https://www.youtube.com/" aria-label="Abrir YouTube">
+        <span class="arrow" aria-hidden="true">›</span>
+        <div class="icon-box" aria-hidden="true">▶️</div>
+        <h2 class="card-title">YouTube</h2>
+        <p class="card-desc">Vídeos, música, directos y canales.</p>
+      </a>
+
+      <a class="card twitch" href="https://www.twitch.tv/" aria-label="Abrir Twitch">
+        <span class="arrow" aria-hidden="true">›</span>
+        <div class="icon-box" aria-hidden="true">🟣</div>
+        <h2 class="card-title">Twitch</h2>
+        <p class="card-desc">Directos, gaming y creadores.</p>
+      </a>
     </nav>
 
-    <footer class="footer">
-      STREAMING
-    </footer>
+    <section class="install" id="installPanel" aria-live="polite">
+      <div class="install-copy">
+        <strong>Instalar Streaming</strong>
+        <span>Ábrela como una app, sin la barra del navegador.</span>
+      </div>
+      <button class="install-btn" id="installBtn" type="button">Instalar</button>
+    </section>
 
+    <footer class="footer">
+      <span class="footer-mark">STREAMING</span>
+      <span id="appMode">Web app</span>
+    </footer>
   </main>
 
   <script>
+    const connectionStatus = document.getElementById("connectionStatus");
+    const installPanel = document.getElementById("installPanel");
+    const installBtn = document.getElementById("installBtn");
+    const appMode = document.getElementById("appMode");
+
+    function updateConnection() {
+      connectionStatus.textContent = navigator.onLine ? "En línea" : "Sin conexión";
+    }
+
+    updateConnection();
+    window.addEventListener("online", updateConnection);
+    window.addEventListener("offline", updateConnection);
+
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    if (standalone) {
+      appMode.textContent = "Modo app";
+    }
+
+    let deferredPrompt = null;
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      if (!standalone) installPanel.classList.add("visible");
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installPanel.classList.remove("visible");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      installPanel.classList.remove("visible");
+      appMode.textContent = "Modo app";
+    });
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("./sw.js")
-          .catch(error => {
-            console.log("Service Worker:", error);
-          });
+        navigator.serviceWorker.register("./sw.js").catch(console.error);
       });
     }
   </script>
-
 </body>
 </html>
