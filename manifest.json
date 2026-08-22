@@ -1,0 +1,10 @@
+{
+  "name": "Streaming",
+  "short_name": "Streaming",
+  "description": "Accesos rápidos a tus servicios de streaming",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "portrait-primary"
+}
