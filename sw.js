@@ -1,4 +1,4 @@
-const CACHE_NAME = "streaming-app-v2";
+const CACHE_NAME = "streaming-app-v3";
 
 const FILES = [
   "./",
@@ -14,8 +14,6 @@ self.addEventListener("install", event => {
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(FILES))
   );
-
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
@@ -30,6 +28,12 @@ self.addEventListener("activate", event => {
   );
 
   self.clients.claim();
+});
+
+self.addEventListener("message", event => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("fetch", event => {
