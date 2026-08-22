@@ -2,162 +2,488 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
   <title>Streaming</title>
 
+  <meta name="theme-color" content="#09090b">
+
+  <!-- iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Streaming">
-  <meta name="theme-color" content="#0f0f12">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
 
   <style>
-    *{
-      box-sizing:border-box;
+    :root {
+      --bg: #09090b;
+      --text: #fff;
+      --secondary: #a1a1aa;
+      --radius: 26px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+
       -webkit-tap-highlight-color: transparent;
     }
 
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      background: linear-gradient(180deg, #0b0b0e 0%, #14141a 100%);
-      color:white;
-      min-height:100vh;
-      padding:24px 18px 40px;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
+    html {
+      color-scheme: dark;
     }
 
-    .app{
-      width:100%;
-      max-width:420px;
+    body {
+      min-height: 100dvh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+
+      color: var(--text);
+
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(124, 58, 237, 0.20),
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #09090b 0%,
+          #111116 100%
+        );
+
+      padding:
+        max(30px, env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        max(30px, env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
+
+      display: flex;
+      justify-content: center;
     }
 
-    .top{
-      margin-top:20px;
-      margin-bottom:28px;
+    .app {
+      width: 100%;
+      max-width: 430px;
+
+      animation: appIn .55s ease both;
     }
 
-    .badge{
-      display:inline-block;
-      font-size:12px;
-      font-weight:700;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      color:#ffb84d;
-      background:rgba(255,184,77,.12);
-      border:1px solid rgba(255,184,77,.18);
-      padding:7px 10px;
-      border-radius:999px;
-      margin-bottom:14px;
+    /* HEADER */
+
+    .header {
+      padding: 22px 4px 30px;
     }
 
-    h1{
-      margin:0;
-      font-size:34px;
-      line-height:1.05;
-      font-weight:800;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+
+      padding: 7px 11px;
+      margin-bottom: 15px;
+
+      border-radius: 999px;
+
+      background: rgba(255, 184, 77, .11);
+      border: 1px solid rgba(255, 184, 77, .18);
+
+      color: #ffb84d;
+
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
     }
 
-    .sub{
-      margin-top:10px;
-      color:#b8b8c7;
-      font-size:15px;
-      line-height:1.5;
+    .badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+
+      background: #ffb84d;
+      border-radius: 50%;
+
+      box-shadow: 0 0 10px #ffb84d;
     }
 
-    .grid{
-      display:grid;
-      gap:16px;
+    h1 {
+      font-size: clamp(38px, 10vw, 46px);
+      line-height: 1;
+      letter-spacing: -.045em;
+      font-weight: 850;
     }
 
-    .card{
-      position:relative;
-      width:100%;
-      border:none;
-      border-radius:24px;
-      padding:20px 18px;
-      color:white;
-      text-align:left;
-      cursor:pointer;
-      box-shadow:0 10px 30px rgba(0,0,0,.28);
-      transition:transform .15s ease, opacity .15s ease;
+    .subtitle {
+      margin-top: 12px;
+
+      color: var(--secondary);
+
+      font-size: 15px;
+      line-height: 1.5;
     }
 
-    .card:active{
-      transform:scale(.98);
-      opacity:.95;
+    /* GRID */
+
+    .grid {
+      display: grid;
+      gap: 16px;
     }
 
-    .football{
-      background:linear-gradient(135deg,#18a34a 0%, #0f7d37 100%);
+    /* CARDS */
+
+    .card {
+      position: relative;
+
+      display: flex;
+      align-items: center;
+
+      min-height: 150px;
+      padding: 22px;
+
+      overflow: hidden;
+
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.11);
+
+      color: white;
+      text-decoration: none;
+
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.32),
+        inset 0 1px 0 rgba(255,255,255,.12);
+
+      transform: translateZ(0);
+
+      transition:
+        transform .18s cubic-bezier(.2,.8,.2,1),
+        filter .18s ease,
+        box-shadow .18s ease;
     }
 
-    .series{
-      background:linear-gradient(135deg,#7c3aed 0%, #4f46e5 100%);
+    .card::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          125deg,
+          rgba(255,255,255,.16),
+          transparent 40%
+        );
+
+      pointer-events: none;
     }
 
-    .icon{
-      font-size:28px;
-      margin-bottom:14px;
-      display:block;
+    .card::after {
+      content: "";
+
+      position: absolute;
+
+      width: 180px;
+      height: 180px;
+
+      right: -70px;
+      bottom: -100px;
+
+      border-radius: 50%;
+
+      background: rgba(255,255,255,.09);
+
+      filter: blur(3px);
+
+      pointer-events: none;
     }
 
-    .title{
-      font-size:24px;
-      font-weight:800;
-      margin-bottom:6px;
+    .card:hover {
+      transform: translateY(-3px);
+
+      box-shadow:
+        0 24px 55px rgba(0,0,0,.40),
+        inset 0 1px 0 rgba(255,255,255,.14);
     }
 
-    .desc{
-      font-size:14px;
-      color:rgba(255,255,255,.88);
-      line-height:1.4;
-      max-width:90%;
+    .card:active {
+      transform: scale(.975);
+      filter: brightness(.93);
     }
 
-    .arrow{
-      position:absolute;
-      right:18px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:24px;
-      opacity:.9;
+    .card:focus-visible {
+      outline: 3px solid white;
+      outline-offset: 4px;
     }
 
-    .bottom{
-      margin-top:24px;
-      text-align:center;
-      color:#8f90a6;
-      font-size:12px;
+    /* COLORES */
+
+    .football {
+      background:
+        linear-gradient(
+          135deg,
+          #22c55e 0%,
+          #15803d 100%
+        );
+    }
+
+    .series {
+      background:
+        linear-gradient(
+          135deg,
+          #8b5cf6 0%,
+          #4f46e5 100%
+        );
+    }
+
+    /* ICONO */
+
+    .icon-container {
+      position: relative;
+      z-index: 2;
+
+      flex: 0 0 auto;
+
+      width: 62px;
+      height: 62px;
+
+      margin-right: 17px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 19px;
+
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.15);
+
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15),
+        0 8px 20px rgba(0,0,0,.13);
+
+      font-size: 30px;
+    }
+
+    /* TEXT */
+
+    .content {
+      position: relative;
+      z-index: 2;
+
+      min-width: 0;
+      padding-right: 25px;
+    }
+
+    .card-title {
+      margin-bottom: 6px;
+
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -.025em;
+    }
+
+    .description {
+      color: rgba(255,255,255,.83);
+
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    /* ARROW */
+
+    .arrow {
+      position: absolute;
+      z-index: 2;
+
+      right: 21px;
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      font-size: 32px;
+      font-weight: 300;
+
+      opacity: .8;
+
+      transition: transform .18s ease;
+    }
+
+    .card:hover .arrow {
+      transform: translate(4px, -50%);
+    }
+
+    /* FOOTER */
+
+    .footer {
+      padding: 27px 4px 15px;
+
+      text-align: center;
+
+      color: #71717a;
+
+      font-size: 11px;
+      letter-spacing: .02em;
+    }
+
+    /* ANIMACIONES */
+
+    @keyframes appIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:nth-child(1) {
+      animation: cardIn .5s .08s ease both;
+    }
+
+    .card:nth-child(2) {
+      animation: cardIn .5s .16s ease both;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="top">
-      <div class="badge">STREAMING</div>
-      <h1>Streaming</h1>
-      <div class="sub">Elige qué quieres abrir.</div>
-    </div>
 
-    <div class="grid">
-      <button class="card football" onclick="window.location.href='https://www.fctv33hd.fun/es'">
-        <span class="icon">⚽</span>
-        <div class="title">Fútbol</div>
-        <div class="desc">Acceso directo a tu web de partidos.</div>
-        <div class="arrow">›</div>
-      </button>
+  <main class="app">
 
-      <button class="card series" onclick="window.location.href='https://series.ly/'">
-        <span class="icon">🎬</span>
-        <div class="title">Series y pelis</div>
-        <div class="desc">Abre tu web de series y películas.</div>
-        <div class="arrow">›</div>
-      </button>
-    </div>
+    <header class="header">
 
-    <div class="bottom"></div>
-  </div>
+      <div class="badge">
+        Streaming
+      </div>
+
+      <h1>¿Qué vemos?</h1>
+
+      <p class="subtitle">
+        Todo tu entretenimiento en un solo sitio.
+      </p>
+
+    </header>
+
+    <nav class="grid" aria-label="Servicios">
+
+      <!-- FÚTBOL -->
+
+      <a
+        class="card football"
+        href="https://www.fctv33hd.fun/es"
+        aria-label="Abrir fútbol"
+      >
+
+        <div class="icon-container" aria-hidden="true">
+          ⚽
+        </div>
+
+        <div class="content">
+
+          <div class="card-title">
+            Fútbol
+          </div>
+
+          <div class="description">
+            Partidos y retransmisiones en directo.
+          </div>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          ›
+        </span>
+
+      </a>
+
+      <!-- SERIES -->
+
+      <a
+        class="card series"
+        href="https://series.ly/"
+        aria-label="Abrir series y películas"
+      >
+
+        <div class="icon-container" aria-hidden="true">
+          🎬
+        </div>
+
+        <div class="content">
+
+          <div class="card-title">
+            Series y pelis
+          </div>
+
+          <div class="description">
+            Series, películas y entretenimiento.
+          </div>
+
+        </div>
+
+        <span class="arrow" aria-hidden="true">
+          ›
+        </span>
+
+      </a>
+
+    </nav>
+
+    <footer class="footer">
+      STREAMING
+    </footer>
+
+  </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("./sw.js")
+          .catch(error => {
+            console.log("Service Worker:", error);
+          });
+      });
+    }
+  </script>
+
 </body>
 </html>
