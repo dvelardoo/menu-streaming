@@ -68,46 +68,87 @@
       z-index:999;
       display:grid;
       place-items:center;
-      background:#000;
-      transition:opacity .45s ease, visibility .45s ease;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255,255,255,.035), transparent 28%),
+        #000;
+      transition:
+        opacity .5s ease,
+        visibility .5s ease,
+        transform .5s var(--ease);
     }
 
     .splash.hidden{
       opacity:0;
       visibility:hidden;
       pointer-events:none;
+      transform:scale(1.015);
     }
 
     .splash-logo{
-      width:86px;
-      height:86px;
+      position:relative;
+      width:92px;
+      height:92px;
       display:grid;
       place-items:center;
-      border-radius:24px;
+      border-radius:27px;
       background:
-        linear-gradient(145deg, #202024, #09090b);
-      border:1px solid rgba(255,255,255,.10);
+        linear-gradient(145deg, #202024 0%, #111114 45%, #070708 100%);
+      border:1px solid rgba(255,255,255,.11);
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.12),
-        0 22px 60px rgba(0,0,0,.55);
-      animation:splashPop .65s var(--ease) both;
+        inset 0 1px 0 rgba(255,255,255,.14),
+        inset 0 -10px 20px rgba(0,0,0,.35),
+        0 24px 70px rgba(0,0,0,.72);
+      animation:splashPop .72s var(--ease) both;
+    }
+
+    .splash-logo::after{
+      content:"";
+      position:absolute;
+      inset:7px;
+      border-radius:21px;
+      border:1px solid rgba(255,255,255,.035);
+      pointer-events:none;
     }
 
     .splash-logo svg{
-      width:42px;
-      height:42px;
-      fill:#f4f4f5;
-      filter:drop-shadow(0 3px 8px rgba(255,255,255,.12));
+      width:45px;
+      height:45px;
+      fill:url(#playGradient);
+      filter:
+        drop-shadow(0 3px 5px rgba(0,0,0,.55))
+        drop-shadow(0 0 12px rgba(255,255,255,.10));
+      animation:playPulse 1.15s ease-in-out both;
     }
 
     @keyframes splashPop{
-      from{opacity:0;transform:scale(.82)}
-      to{opacity:1;transform:scale(1)}
+      0%{
+        opacity:0;
+        transform:scale(.78) translateY(5px);
+        filter:blur(5px);
+      }
+      60%{
+        opacity:1;
+        transform:scale(1.035) translateY(0);
+        filter:blur(0);
+      }
+      100%{
+        opacity:1;
+        transform:scale(1);
+      }
+    }
+
+    @keyframes playPulse{
+      0%{transform:scale(.9);opacity:.35}
+      55%{transform:scale(1.06);opacity:1}
+      100%{transform:scale(1);opacity:1}
     }
 
     .app{
       position:relative;
       width:min(100%,480px);
+      opacity:0;
+      transform:translateY(8px);
+      transition:opacity .55s ease, transform .55s var(--ease);
       margin:0 auto;
       padding:
         max(28px, env(safe-area-inset-top))
@@ -116,9 +157,13 @@
         max(18px, env(safe-area-inset-left));
     }
 
+    .app.ready{
+      opacity:1;
+      transform:translateY(0);
+    }
+
     .header{
       padding:18px 4px 30px;
-      animation:fadeUp .55s .05s ease both;
     }
 
     .topline{
@@ -213,18 +258,24 @@
 
       transform:translateZ(0);
       transition:
-        transform .18s var(--ease),
+        transform .16s var(--ease),
         border-color .18s ease,
         background .18s ease,
-        filter .18s ease;
+        filter .18s ease,
+        box-shadow .18s ease;
 
-      animation:cardIn .55s ease both;
+      opacity:0;
+      transform:translateY(12px) scale(.985);
     }
 
-    .card:nth-child(1){animation-delay:.08s}
-    .card:nth-child(2){animation-delay:.14s}
-    .card:nth-child(3){animation-delay:.20s}
-    .card:nth-child(4){animation-delay:.26s}
+    .app.ready .card{
+      animation:cardIn .48s var(--ease) forwards;
+    }
+
+    .app.ready .card:nth-child(1){animation-delay:.03s}
+    .app.ready .card:nth-child(2){animation-delay:.08s}
+    .app.ready .card:nth-child(3){animation-delay:.13s}
+    .app.ready .card:nth-child(4){animation-delay:.18s}
 
     .card::before{
       content:"";
@@ -258,10 +309,17 @@
         var(--panel-2);
     }
 
-    .card:active,
+    .card:active{
+      transform:scale(.975);
+      filter:brightness(.94);
+    }
+
     .card.leaving{
-      transform:scale(.965);
-      filter:brightness(.88);
+      transform:scale(.955);
+      filter:brightness(.78);
+      box-shadow:
+        0 10px 28px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.05);
     }
 
     .card:focus-visible,
@@ -432,12 +490,19 @@
   <div class="splash" id="splash" aria-hidden="true">
     <div class="splash-logo">
       <svg viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="playGradient" x1="4" y1="3" x2="19" y2="20">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="52%" stop-color="#d4d4d8"/>
+            <stop offset="100%" stop-color="#8a8a92"/>
+          </linearGradient>
+        </defs>
         <path d="M8.2 5.8c0-1.1 1.2-1.8 2.1-1.2l8.4 6c.8.6.8 1.8 0 2.4l-8.4 6c-.9.6-2.1 0-2.1-1.2z"/>
       </svg>
     </div>
   </div>
 
-  <main class="app">
+  <main class="app" id="app">
     <header class="header">
       <div class="topline">
         <div class="brand">
@@ -471,6 +536,7 @@
 
   <script>
     const splash = document.getElementById("splash");
+    const app = document.getElementById("app");
     const connectionStatus = document.getElementById("connectionStatus");
     const installPanel = document.getElementById("installPanel");
     const installBtn = document.getElementById("installBtn");
@@ -572,7 +638,10 @@
 
     // Splash corto, tipo app nativa.
     window.addEventListener("load", () => {
-      setTimeout(() => splash.classList.add("hidden"), 420);
+      setTimeout(() => {
+        splash.classList.add("hidden");
+        app.classList.add("ready");
+      }, 650);
     });
 
     // Estado de conexión.
@@ -638,7 +707,7 @@
 
         setTimeout(() => {
           window.location.href = target;
-        }, 115);
+        }, 145);
       });
     });
 
