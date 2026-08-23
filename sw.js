@@ -1,6 +1,6 @@
-const CACHE_NAME = "streaming-app-v4";
+const CACHE_NAME = "streaming-app-v5";
 
-const FILES = [
+const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
@@ -12,7 +12,7 @@ const FILES = [
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(FILES))
+      .then(cache => cache.addAll(APP_SHELL))
   );
 
   self.skipWaiting();
@@ -35,7 +35,13 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const request = event.request;
 
-  // Para páginas HTML: primero red, luego caché
+  // Solo gestionamos peticiones GET
+  if (request.method !== "GET") {
+    return;
+  }
+
+  // HTML / navegación:
+  // intenta siempre cargar primero la versión nueva de internet.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -43,7 +49,7 @@ self.addEventListener("fetch", event => {
           const copy = response.clone();
 
           caches.open(CACHE_NAME).then(cache => {
-            cache.put(request, copy);
+            cache.put("./index.html", copy);
           });
 
           return response;
@@ -54,9 +60,30 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Para iconos y resto de archivos: caché primero
+  // Manifest e iconos:
+  // caché primero, con red como respaldo.
   event.respondWith(
     caches.match(request)
-      .then(response => response || fetch(request))
+      .then(cached => {
+        if (cached) {
+          return cached;
+        }
+
+        return fetch(request).then(response => {
+          if (
+            response &&
+            response.status === 200 &&
+            response.type === "basic"
+          ) {
+            const copy = response.clone();
+
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(request, copy);
+            });
+          }
+
+          return response;
+        });
+      })
   );
 });
