@@ -202,12 +202,22 @@
     }
 
     .section-label{
+      display:flex;
+      align-items:center;
+      gap:9px;
       margin:2px 3px 11px;
       color:#bfc0c6;
       font-size:11px;
       font-weight:800;
       letter-spacing:.08em;
       text-transform:uppercase;
+    }
+
+    .section-label::after{
+      content:"";
+      flex:1;
+      height:1px;
+      background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);
     }
 
     /* Shared cards */
@@ -277,25 +287,76 @@
     .hero::before{
       content:"";
       position:absolute;
-      left:-8%;
-      right:-8%;
-      bottom:-42%;
-      height:70%;
+      left:-10%;
+      right:-10%;
+      bottom:-45%;
+      height:76%;
       z-index:-1;
       border-radius:50% 50% 0 0;
       background:
+        linear-gradient(90deg,
+          transparent 0 14%,
+          rgba(255,255,255,.05) 14% 14.4%,
+          transparent 14.4% 49.6%,
+          rgba(255,255,255,.045) 49.6% 50%,
+          transparent 50% 85.6%,
+          rgba(255,255,255,.05) 85.6% 86%,
+          transparent 86% 100%
+        ),
+        linear-gradient(180deg,
+          transparent 0 46%,
+          rgba(255,255,255,.05) 46% 46.5%,
+          transparent 46.5% 100%
+        ),
+        linear-gradient(180deg,rgba(48,114,69,.13),rgba(10,31,18,.22));
+      border-top:1px solid rgba(255,255,255,.06);
+      transform:perspective(330px) rotateX(57deg);
+      transform-origin:center top;
+      opacity:.95;
+      pointer-events:none;
+    }
+
+    .hero-scene{
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      overflow:hidden;
+      border-radius:inherit;
+      pointer-events:none;
+    }
+
+    .hero-scene::before{
+      content:"";
+      position:absolute;
+      left:8%;
+      right:8%;
+      bottom:24%;
+      height:26%;
+      background:
         repeating-linear-gradient(
           90deg,
-          rgba(255,255,255,.018) 0 1px,
-          transparent 1px 42px
-        ),
-        linear-gradient(180deg,rgba(55,125,78,.10),rgba(11,35,21,.20));
-      border-top:1px solid rgba(255,255,255,.055);
-      transform:perspective(300px) rotateX(54deg);
-      transform-origin:center top;
-      filter:blur(.15px);
-      opacity:.9;
-      pointer-events:none;
+          rgba(255,255,255,.035) 0 2px,
+          transparent 2px 16px
+        );
+      opacity:.25;
+      filter:blur(.5px);
+      mask-image:linear-gradient(to top,black,transparent 95%);
+    }
+
+    .hero-scene::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      bottom:23%;
+      width:96px;
+      height:44px;
+      transform:translateX(-50%);
+      border:2px solid rgba(255,255,255,.08);
+      border-bottom:0;
+      border-radius:4px 4px 0 0;
+      box-shadow:
+        -150px 0 0 -2px rgba(255,255,255,.02),
+        150px 0 0 -2px rgba(255,255,255,.02);
     }
 
     .hero .glow{
@@ -351,7 +412,7 @@
 
     .hero-arrow{
       color:#8d8d96;
-      font-size:31px;
+      font-size:33px;
       line-height:1;
     }
 
@@ -400,7 +461,7 @@
     .hero-desc{
       margin:0;
       max-width:300px;
-      color:#a2a2aa;
+      color:#aaaab2;
       font-size:13px;
       line-height:1.45;
     }
@@ -426,17 +487,38 @@
     .feature::before{
       content:"";
       position:absolute;
-      width:150px;
-      height:150px;
-      right:-54px;
-      top:-82px;
+      inset:0;
+      z-index:-1;
+      background:
+        linear-gradient(100deg,
+          transparent 0 62%,
+          rgba(255,255,255,.035) 62.5% 63%,
+          transparent 63.5% 100%
+        ),
+        radial-gradient(ellipse at 84% 18%,
+          rgba(255,255,255,.09),
+          transparent 24%
+        );
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .feature::after{
+      content:"";
+      position:absolute;
+      right:18px;
+      top:50%;
+      width:82px;
+      height:82px;
+      transform:translateY(-50%);
       z-index:-1;
       border-radius:50%;
-      border:1px solid rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.06);
       box-shadow:
-        0 0 0 18px rgba(255,255,255,.012),
-        0 0 0 36px rgba(255,255,255,.008);
-      opacity:.9;
+        inset 0 0 0 18px rgba(255,255,255,.012),
+        inset 0 0 0 34px rgba(255,255,255,.008),
+        0 0 36px rgba(135,112,170,.08);
+      opacity:.95;
       pointer-events:none;
     }
 
@@ -680,6 +762,7 @@
     <div class="section-label">Ahora</div>
 
     <a class="interactive-card hero" href="https://www.fctv33hd.fun/es" aria-label="Abrir deportes">
+      <span class="hero-scene" aria-hidden="true"></span>
       <span class="glow" aria-hidden="true"></span>
 
       <div class="hero-top">
