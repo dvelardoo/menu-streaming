@@ -31,6 +31,9 @@
       --muted-2:#66666f;
       --radius:28px;
       --ease:cubic-bezier(.2,.8,.2,1);
+      --page-x:18px;
+      --page-top:24px;
+      --page-bottom:30px;
     }
 
     *{
@@ -41,10 +44,12 @@
     html{
       color-scheme:dark;
       background:#000;
+      min-height:100%;
     }
 
     body{
       margin:0;
+      min-height:100vh;
       min-height:100dvh;
       overflow-x:hidden;
       color:var(--text);
@@ -145,16 +150,16 @@
 
     .app{
       position:relative;
-      width:min(100%,480px);
+      width:min(100%,470px);
       opacity:0;
       transform:translateY(8px);
       transition:opacity .55s ease, transform .55s var(--ease);
       margin:0 auto;
       padding:
-        max(28px, env(safe-area-inset-top))
-        max(18px, env(safe-area-inset-right))
-        max(34px, env(safe-area-inset-bottom))
-        max(18px, env(safe-area-inset-left));
+        max(var(--page-top), env(safe-area-inset-top))
+        max(var(--page-x), env(safe-area-inset-right))
+        max(var(--page-bottom), env(safe-area-inset-bottom))
+        max(var(--page-x), env(safe-area-inset-left));
     }
 
     .app.ready{
@@ -163,7 +168,7 @@
     }
 
     .header{
-      padding:18px 4px 30px;
+      padding:12px 3px 24px;
     }
 
     .topline{
@@ -171,7 +176,7 @@
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      margin-bottom:22px;
+      margin-bottom:18px;
     }
 
     .brand{
@@ -201,22 +206,22 @@
     h1{
       margin:0;
       max-width:390px;
-      font-size:clamp(43px,12vw,58px);
+      font-size:clamp(40px,11.5vw,54px);
       line-height:.96;
       letter-spacing:-.06em;
       font-weight:850;
     }
 
     .subtitle{
-      margin:15px 0 0;
-      max-width:330px;
+      margin:12px 0 0;
+      max-width:340px;
       color:var(--muted);
-      font-size:15px;
-      line-height:1.5;
+      font-size:14.5px;
+      line-height:1.45;
     }
 
     .section-label{
-      margin:4px 4px 13px;
+      margin:2px 4px 11px;
       color:#c9c9ce;
       font-size:12px;
       font-weight:700;
@@ -227,7 +232,7 @@
     .grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:14px;
+      gap:12px;
     }
 
     .card{
@@ -238,8 +243,8 @@
       --tilt-y:0deg;
 
       position:relative;
-      min-height:190px;
-      padding:17px;
+      min-height:172px;
+      padding:15px;
       overflow:hidden;
       isolation:isolate;
 
@@ -369,12 +374,12 @@
     }
 
     .icon-box{
-      width:55px;
-      height:55px;
+      width:50px;
+      height:50px;
       display:grid;
       place-items:center;
       border:1px solid rgba(255,255,255,.11);
-      border-radius:18px;
+      border-radius:16px;
       background:rgba(255,255,255,.055);
       backdrop-filter:blur(18px);
       -webkit-backdrop-filter:blur(18px);
@@ -392,8 +397,8 @@
     }
 
     .icon-box svg{
-      width:27px;
-      height:27px;
+      width:25px;
+      height:25px;
       fill:none;
       stroke:#f4f4f5;
       stroke-width:1.8;
@@ -420,12 +425,12 @@
     }
 
     .card-copy{
-      padding-top:28px;
+      padding-top:22px;
     }
 
     .card-title{
       margin:0 0 6px;
-      font-size:19px;
+      font-size:18px;
       line-height:1.1;
       font-weight:820;
       letter-spacing:-.025em;
@@ -435,8 +440,8 @@
       margin:0;
       max-width:95%;
       color:#a5a5ad;
-      font-size:12.5px;
-      line-height:1.42;
+      font-size:12px;
+      line-height:1.4;
     }
 
     .install{
@@ -484,7 +489,7 @@
     }
 
     .footer{
-      padding:28px 4px 3px;
+      padding:22px 4px 3px;
       display:flex;
       justify-content:space-between;
       align-items:center;
@@ -508,10 +513,80 @@
       to{opacity:1;transform:translateY(0) scale(1)}
     }
 
-    @media(max-width:360px){
-      .grid{grid-template-columns:1fr}
-      .card{min-height:150px}
-      .card-copy{padding-top:20px}
+    @media(max-width:390px){
+      :root{
+        --page-x:14px;
+        --page-top:20px;
+        --page-bottom:24px;
+      }
+
+      .header{
+        padding-top:8px;
+        padding-bottom:20px;
+      }
+
+      .topline{
+        margin-bottom:16px;
+      }
+
+      h1{
+        font-size:clamp(38px,11.2vw,48px);
+      }
+
+      .subtitle{
+        font-size:14px;
+      }
+
+      .grid{
+        gap:10px;
+      }
+
+      .card{
+        min-height:162px;
+        padding:14px;
+        border-radius:24px;
+      }
+
+      .icon-box{
+        width:47px;
+        height:47px;
+      }
+
+      .card-copy{
+        padding-top:18px;
+      }
+
+      .card-title{
+        font-size:17px;
+      }
+
+      .card-desc{
+        font-size:11.5px;
+      }
+    }
+
+    @media(max-width:340px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .card{
+        min-height:132px;
+      }
+
+      .card-copy{
+        padding-top:16px;
+      }
+    }
+
+    @media(min-width:700px){
+      .app{
+        width:min(100%,620px);
+      }
+
+      .card{
+        min-height:184px;
+      }
     }
 
     @media(prefers-reduced-motion:reduce){
