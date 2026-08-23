@@ -232,6 +232,10 @@
 
     .card{
       --accent:rgba(255,255,255,.12);
+      --mx:50%;
+      --my:50%;
+      --tilt-x:0deg;
+      --tilt-y:0deg;
 
       position:relative;
       min-height:190px;
@@ -301,8 +305,32 @@
       pointer-events:none;
     }
 
+    .card .touch-glow{
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+      opacity:0;
+      background:
+        radial-gradient(
+          circle 110px at var(--mx) var(--my),
+          rgba(255,255,255,.13),
+          rgba(255,255,255,.045) 34%,
+          transparent 68%
+        );
+      transition:opacity .2s ease;
+    }
+
+    .card.interacting .touch-glow{
+      opacity:1;
+    }
+
     .card:hover{
-      transform:translateY(-3px);
+      transform:
+        perspective(700px)
+        rotateX(var(--tilt-x))
+        rotateY(var(--tilt-y))
+        translateY(-3px);
       border-color:var(--line-strong);
       background:
         linear-gradient(150deg, rgba(255,255,255,.095), rgba(255,255,255,.025) 55%),
@@ -351,6 +379,16 @@
       backdrop-filter:blur(18px);
       -webkit-backdrop-filter:blur(18px);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+      transition:
+        transform .18s var(--ease),
+        background .18s ease,
+        border-color .18s ease;
+    }
+
+    .card.interacting .icon-box{
+      transform:translateY(-2px) scale(1.035);
+      background:rgba(255,255,255,.075);
+      border-color:rgba(255,255,255,.15);
     }
 
     .icon-box svg{
@@ -389,14 +427,14 @@
       margin:0 0 6px;
       font-size:19px;
       line-height:1.1;
-      font-weight:800;
+      font-weight:820;
       letter-spacing:-.025em;
     }
 
     .card-desc{
       margin:0;
       max-width:95%;
-      color:#93939c;
+      color:#a5a5ad;
       font-size:12.5px;
       line-height:1.42;
     }
@@ -616,6 +654,8 @@
           href="${service.url}"
           aria-label="Abrir ${service.name}"
         >
+          <span class="touch-glow" aria-hidden="true"></span>
+
           <div class="card-head">
             <div class="icon-box" aria-hidden="true">
               ${icons[service.icon] || icons.play}
@@ -632,6 +672,52 @@
     }
 
     renderServices();
+
+    // Efecto táctil / profundidad muy sutil.
+    document.querySelectorAll(".card").forEach(card => {
+      const updatePointer = (clientX, clientY) => {
+        const rect = card.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        const px = Math.max(0, Math.min(100, (x / rect.width) * 100));
+        const py = Math.max(0, Math.min(100, (y / rect.height) * 100));
+
+        const tiltY = ((px - 50) / 50) * 2.2;
+        const tiltX = -((py - 50) / 50) * 2.2;
+
+        card.style.setProperty("--mx", `${px}%`);
+        card.style.setProperty("--my", `${py}%`);
+        card.style.setProperty("--tilt-x", `${tiltX}deg`);
+        card.style.setProperty("--tilt-y", `${tiltY}deg`);
+      };
+
+      card.addEventListener("pointerenter", event => {
+        card.classList.add("interacting");
+        updatePointer(event.clientX, event.clientY);
+      });
+
+      card.addEventListener("pointermove", event => {
+        updatePointer(event.clientX, event.clientY);
+      });
+
+      card.addEventListener("pointerleave", () => {
+        card.classList.remove("interacting");
+        card.style.setProperty("--mx", "50%");
+        card.style.setProperty("--my", "50%");
+        card.style.setProperty("--tilt-x", "0deg");
+        card.style.setProperty("--tilt-y", "0deg");
+      });
+
+      card.addEventListener("pointerdown", event => {
+        card.classList.add("interacting");
+        updatePointer(event.clientX, event.clientY);
+      });
+
+      card.addEventListener("pointerup", () => {
+        setTimeout(() => card.classList.remove("interacting"), 120);
+      });
+    });
 
     // Splash corto, tipo app nativa.
     window.addEventListener("load", () => {
