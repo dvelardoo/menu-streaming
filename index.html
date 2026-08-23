@@ -599,6 +599,164 @@
       }
     }
   </style>
+
+  <style>
+    /* V9 responsive: mobile-first + desktop cinematic */
+    .app{
+      width:min(100%,500px);
+    }
+
+    .sports-card{
+      min-height:390px;
+      background-position:center;
+    }
+
+    .cinema-card{
+      min-height:270px;
+      background-position:center;
+    }
+
+    @media (max-width: 390px){
+      .sports-card{
+        min-height:365px;
+        background-position:58% center;
+      }
+
+      .cinema-card{
+        min-height:250px;
+        background-position:62% center;
+      }
+
+      .sports-copy{
+        left:18px;
+        right:18px;
+        bottom:18px;
+      }
+
+      .sports-title{
+        font-size:33px;
+      }
+
+      .cinema-copy{
+        left:18px;
+        right:18px;
+        bottom:18px;
+      }
+
+      .cinema-title{
+        font-size:27px;
+      }
+
+      .small-card{
+        min-height:160px;
+      }
+    }
+
+    @media (min-width: 760px){
+      body{
+        background:
+          radial-gradient(circle at 50% -15%,rgba(255,255,255,.07),transparent 30%),
+          #000;
+      }
+
+      .app{
+        width:min(calc(100% - 48px),1240px);
+        max-width:none;
+        padding-left:24px;
+        padding-right:24px;
+      }
+
+      .topbar{
+        margin-bottom:30px;
+      }
+
+      .intro{
+        margin-bottom:22px;
+      }
+
+      h1{
+        font-size:56px;
+      }
+
+      .sports-card{
+        min-height:330px;
+        padding:28px;
+        border-radius:30px;
+        background-position:center 54%;
+      }
+
+      .sports-copy{
+        left:28px;
+        bottom:28px;
+        max-width:360px;
+      }
+
+      .sports-title{
+        font-size:42px;
+      }
+
+      .sports-desc{
+        max-width:320px;
+      }
+
+      .cinema-card{
+        min-height:280px;
+        padding:28px;
+        border-radius:28px;
+        background-position:center 52%;
+      }
+
+      .cinema-copy{
+        left:28px;
+        bottom:28px;
+        max-width:330px;
+      }
+
+      .cinema-title{
+        font-size:34px;
+      }
+
+      .small-grid{
+        gap:16px;
+      }
+
+      .small-card{
+        min-height:145px;
+        padding:20px;
+      }
+
+      .small-copy{
+        left:92px;
+        right:58px;
+        bottom:50%;
+        transform:translateY(50%);
+      }
+
+      .small-icon{
+        position:absolute;
+        left:20px;
+        top:50%;
+        transform:translateY(-50%);
+      }
+
+      .small-arrow{
+        right:18px;
+        bottom:50%;
+        transform:translateY(50%);
+      }
+    }
+
+    @media (min-width: 1100px){
+      .sports-card{
+        min-height:350px;
+      }
+
+      .cinema-card{
+        min-height:300px;
+      }
+    }
+  </style>
+
 </head>
 
 <body>
