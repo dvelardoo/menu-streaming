@@ -17,6 +17,7 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="preload" href="./icons/icon-512.png" as="image">
 
   <style>
     :root{
@@ -110,13 +111,12 @@
       pointer-events:none;
     }
 
-    .splash-logo svg{
-      width:45px;
-      height:45px;
-      fill:url(#playGradient);
-      filter:
-        drop-shadow(0 3px 5px rgba(0,0,0,.55))
-        drop-shadow(0 0 12px rgba(255,255,255,.10));
+    .splash-logo img{
+      width:100%;
+      height:100%;
+      display:block;
+      object-fit:cover;
+      border-radius:26px;
       animation:playPulse 1.15s ease-in-out both;
     }
 
@@ -489,16 +489,13 @@
 
   <div class="splash" id="splash" aria-hidden="true">
     <div class="splash-logo">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <defs>
-          <linearGradient id="playGradient" x1="4" y1="3" x2="19" y2="20">
-            <stop offset="0%" stop-color="#ffffff"/>
-            <stop offset="52%" stop-color="#d4d4d8"/>
-            <stop offset="100%" stop-color="#8a8a92"/>
-          </linearGradient>
-        </defs>
-        <path d="M8.2 5.8c0-1.1 1.2-1.8 2.1-1.2l8.4 6c.8.6.8 1.8 0 2.4l-8.4 6c-.9.6-2.1 0-2.1-1.2z"/>
-      </svg>
+      <img
+        src="./icons/icon-512.png"
+        alt=""
+        width="92"
+        height="92"
+        aria-hidden="true"
+      >
     </div>
   </div>
 
