@@ -1172,6 +1172,56 @@
     }
   </style>
 
+
+  <style>
+    /* V14: microinteracciones y acabado */
+    @media (hover:hover) and (pointer:fine){
+      .card:hover{
+        transform:translateY(-3px);
+        border-color:rgba(255,255,255,.18);
+        box-shadow:0 30px 75px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);
+        filter:brightness(1.045);
+      }
+      .card:hover .enter-btn{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.18)}
+      .card:hover .enter-btn span:last-child{transform:translateX(3px)}
+      .small-card:hover .small-arrow{transform:translateY(50%) translateX(3px)}
+      .brand-icon:hover{transform:scale(1.04)}
+    }
+    .brand-icon{transition:transform .2s var(--ease)}
+    .enter-btn{transition:background .2s ease,border-color .2s ease,transform .2s var(--ease)}
+    .enter-btn span:last-child{transition:transform .2s var(--ease)}
+    .small-arrow{transition:transform .2s var(--ease),background .2s ease}
+    .card:active .enter-btn{transform:scale(.97)}
+
+    .topbar,.intro,.sports-card,.cinema-card,.section-title,.small-grid,.footer{
+      opacity:0;transform:translateY(12px)
+    }
+    .app.ready .topbar,.app.ready .intro,.app.ready .sports-card,.app.ready .cinema-card,
+    .app.ready .section-title,.app.ready .small-grid,.app.ready .footer{
+      animation:reveal .55s var(--ease) forwards
+    }
+    .app.ready .topbar{animation-delay:.02s}
+    .app.ready .intro{animation-delay:.07s}
+    .app.ready .sports-card{animation-delay:.12s}
+    .app.ready .cinema-card{animation-delay:.17s}
+    .app.ready .section-title{animation-delay:.22s}
+    .app.ready .small-grid{animation-delay:.27s}
+    .app.ready .footer{animation-delay:.32s}
+    @keyframes reveal{to{opacity:1;transform:none}}
+
+    .status.online::before{
+      content:"";display:inline-block;width:5px;height:5px;margin-right:7px;border-radius:50%;
+      background:#8b8b92;vertical-align:1px;animation:onlinePulse 2.4s ease-in-out infinite
+    }
+    @keyframes onlinePulse{0%,100%{opacity:.35}50%{opacity:.9}}
+
+    @media(prefers-reduced-motion:reduce){
+      .topbar,.intro,.sports-card,.cinema-card,.section-title,.small-grid,.footer{
+        opacity:1!important;transform:none!important;animation:none!important
+      }
+    }
+  </style>
+
 </head>
 
 <body>
@@ -1311,8 +1361,9 @@
     });
 
     function updateConnection(){
-      connectionStatus.textContent =
-        navigator.onLine ? "En línea" : "Sin conexión";
+      const online = navigator.onLine;
+      connectionStatus.textContent = online ? "En línea" : "Sin conexión";
+      connectionStatus.classList.toggle("online", online);
     }
 
     updateConnection();
