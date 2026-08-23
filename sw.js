@@ -1,4 +1,4 @@
-const CACHE_NAME = "streaming-app-v3";
+const CACHE_NAME = "streaming-app-v4";
 
 const FILES = [
   "./",
@@ -14,6 +14,8 @@ self.addEventListener("install", event => {
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(FILES))
   );
+
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", event => {
@@ -30,15 +32,31 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-self.addEventListener("message", event => {
-  if (event.data?.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
-});
-
 self.addEventListener("fetch", event => {
+  const request = event.request;
+
+  // Para páginas HTML: primero red, luego caché
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          const copy = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, copy);
+          });
+
+          return response;
+        })
+        .catch(() => caches.match("./index.html"))
+    );
+
+    return;
+  }
+
+  // Para iconos y resto de archivos: caché primero
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
+    caches.match(request)
+      .then(response => response || fetch(request))
   );
 });
