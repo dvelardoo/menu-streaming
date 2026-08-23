@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
   <title>Streaming</title>
 
   <meta name="description" content="Tus accesos rápidos de streaming en una sola app.">
-  <meta name="theme-color" content="#09090b">
+  <meta name="theme-color" content="#000000">
 
   <!-- PWA / iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,480 +15,516 @@
   <meta name="apple-mobile-web-app-title" content="Streaming">
 
   <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icons/icon-180.png">
-  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 
   <style>
-    :root {
-      --bg: #09090b;
-      --bg-2: #111116;
-      --surface: rgba(255,255,255,.055);
-      --border: rgba(255,255,255,.10);
-      --text: #fff;
-      --muted: #a1a1aa;
-      --muted-2: #71717a;
-      --radius-xl: 28px;
-      --radius-lg: 22px;
+    :root{
+      --bg:#000;
+      --panel:#0d0d0f;
+      --panel-2:#141417;
+      --line:rgba(255,255,255,.09);
+      --line-strong:rgba(255,255,255,.14);
+      --text:#fff;
+      --muted:#9c9ca5;
+      --muted-2:#66666f;
+      --radius:28px;
+      --ease:cubic-bezier(.2,.8,.2,1);
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
     }
 
-    html {
-      color-scheme: dark;
-      background: var(--bg);
+    html{
+      color-scheme:dark;
+      background:#000;
     }
 
-    body {
-      margin: 0;
-      min-height: 100dvh;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
-      overflow-x: hidden;
+    body{
+      margin:0;
+      min-height:100dvh;
+      overflow-x:hidden;
+      color:var(--text);
+      background:#000;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
       background:
-        radial-gradient(circle at 50% -8%, rgba(255,255,255,.08), transparent 30%),
-        linear-gradient(180deg, #070708 0%, #101014 100%);
+        radial-gradient(circle at 50% -8%, rgba(255,255,255,.10), transparent 28%),
+        radial-gradient(circle at 20% 60%, rgba(255,255,255,.025), transparent 30%);
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      opacity: .35;
+    /* SPLASH */
+    .splash{
+      position:fixed;
+      inset:0;
+      z-index:999;
+      display:grid;
+      place-items:center;
+      background:#000;
+      transition:opacity .45s ease, visibility .45s ease;
+    }
+
+    .splash.hidden{
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+
+    .splash-logo{
+      width:86px;
+      height:86px;
+      display:grid;
+      place-items:center;
+      border-radius:24px;
       background:
-        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-      background-size: 34px 34px;
-      mask-image: linear-gradient(to bottom, black, transparent 70%);
+        linear-gradient(145deg, #202024, #09090b);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.12),
+        0 22px 60px rgba(0,0,0,.55);
+      animation:splashPop .65s var(--ease) both;
     }
 
-    .app {
-      position: relative;
-      width: min(100%, 480px);
-      margin: 0 auto;
+    .splash-logo svg{
+      width:42px;
+      height:42px;
+      fill:#f4f4f5;
+      filter:drop-shadow(0 3px 8px rgba(255,255,255,.12));
+    }
+
+    @keyframes splashPop{
+      from{opacity:0;transform:scale(.82)}
+      to{opacity:1;transform:scale(1)}
+    }
+
+    .app{
+      position:relative;
+      width:min(100%,480px);
+      margin:0 auto;
       padding:
-        max(30px, env(safe-area-inset-top))
+        max(28px, env(safe-area-inset-top))
         max(18px, env(safe-area-inset-right))
         max(34px, env(safe-area-inset-bottom))
         max(18px, env(safe-area-inset-left));
     }
 
-    .header {
-      padding: 16px 3px 28px;
-      animation: fadeUp .55s ease both;
+    .header{
+      padding:18px 4px 30px;
+      animation:fadeUp .55s .05s ease both;
     }
 
-    .status-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+    .topline{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:22px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 999px;
-      background: rgba(255,255,255,.055);
-      color: #d4d4d8;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .09em;
-      text-transform: uppercase;
+    .brand{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      color:#d4d4d8;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
     }
 
-    .badge-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: currentColor;
-      box-shadow: 0 0 12px currentColor;
+    .brand-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:#f4f4f5;
+      box-shadow:0 0 14px rgba(255,255,255,.75);
     }
 
-    .connection {
-      font-size: 11px;
-      color: var(--muted-2);
+    .connection{
+      color:var(--muted-2);
+      font-size:11px;
     }
 
-    h1 {
-      margin: 0;
-      max-width: 360px;
-      font-size: clamp(40px, 11vw, 54px);
-      line-height: .98;
-      letter-spacing: -.055em;
-      font-weight: 850;
+    h1{
+      margin:0;
+      max-width:390px;
+      font-size:clamp(43px,12vw,58px);
+      line-height:.96;
+      letter-spacing:-.06em;
+      font-weight:850;
     }
 
-    .subtitle {
-      margin: 14px 0 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.5;
+    .subtitle{
+      margin:15px 0 0;
+      max-width:330px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.5;
     }
 
-    .section-title {
-      margin: 4px 3px 12px;
-      color: #d4d4d8;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .01em;
+    .section-label{
+      margin:4px 4px 13px;
+      color:#c9c9ce;
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.035em;
+      text-transform:uppercase;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
     }
 
-    .card {
-      position: relative;
-      min-height: 188px;
-      padding: 17px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      color: white;
-      text-decoration: none;
+    .card{
+      --accent:rgba(255,255,255,.12);
+
+      position:relative;
+      min-height:190px;
+      padding:17px;
+      overflow:hidden;
+      isolation:isolate;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:
+        linear-gradient(150deg, rgba(255,255,255,.075), rgba(255,255,255,.018) 55%),
+        var(--panel);
+
+      color:#fff;
+      text-decoration:none;
+
       box-shadow:
-        0 18px 42px rgba(0,0,0,.28),
-        inset 0 1px 0 rgba(255,255,255,.10);
-      isolation: isolate;
-      transform: translateZ(0);
+        0 20px 50px rgba(0,0,0,.38),
+        inset 0 1px 0 rgba(255,255,255,.07);
+
+      transform:translateZ(0);
       transition:
-        transform .18s cubic-bezier(.2,.8,.2,1),
-        box-shadow .18s ease,
+        transform .18s var(--ease),
+        border-color .18s ease,
+        background .18s ease,
         filter .18s ease;
-      animation: cardIn .55s ease both;
+
+      animation:cardIn .55s ease both;
     }
 
-    .card:nth-child(1) { animation-delay: .06s; }
-    .card:nth-child(2) { animation-delay: .12s; }
-    .card:nth-child(3) { animation-delay: .18s; }
-    .card:nth-child(4) { animation-delay: .24s; }
+    .card:nth-child(1){animation-delay:.08s}
+    .card:nth-child(2){animation-delay:.14s}
+    .card:nth-child(3){animation-delay:.20s}
+    .card:nth-child(4){animation-delay:.26s}
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(135deg, rgba(255,255,255,.17), transparent 42%);
-      pointer-events: none;
+    .card::before{
+      content:"";
+      position:absolute;
+      width:150px;
+      height:150px;
+      right:-65px;
+      bottom:-80px;
+      z-index:-1;
+      border-radius:50%;
+      background:var(--accent);
+      filter:blur(22px);
+      opacity:.75;
+      pointer-events:none;
     }
 
-    .card::after {
-      content: "";
-      position: absolute;
-      width: 145px;
-      height: 145px;
-      right: -65px;
-      bottom: -70px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.13);
-      filter: blur(4px);
-      z-index: -1;
-      pointer-events: none;
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      background:linear-gradient(130deg, rgba(255,255,255,.06), transparent 38%);
+      pointer-events:none;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow:
-        0 24px 50px rgba(0,0,0,.36),
-        inset 0 1px 0 rgba(255,255,255,.12);
+    .card:hover{
+      transform:translateY(-3px);
+      border-color:var(--line-strong);
+      background:
+        linear-gradient(150deg, rgba(255,255,255,.095), rgba(255,255,255,.025) 55%),
+        var(--panel-2);
     }
 
-    .card:active {
-      transform: scale(.965);
-      filter: brightness(.94);
+    .card:active,
+    .card.leaving{
+      transform:scale(.965);
+      filter:brightness(.88);
     }
 
     .card:focus-visible,
-    .install-btn:focus-visible {
-      outline: 3px solid rgba(255,255,255,.9);
-      outline-offset: 4px;
+    .install-btn:focus-visible{
+      outline:3px solid rgba(255,255,255,.9);
+      outline-offset:4px;
     }
 
-    .football { background: linear-gradient(145deg, #20b954, #087533); }
-    .series   { background: linear-gradient(145deg, #8b5cf6, #4338ca); }
-    .youtube  { background: linear-gradient(145deg, #ef4444, #b91c1c); }
-    .twitch   { background: linear-gradient(145deg, #a855f7, #6d28d9); }
+    .football{--accent:rgba(64,180,105,.22)}
+    .series{--accent:rgba(128,92,210,.22)}
+    .youtube{--accent:rgba(210,70,70,.22)}
+    .twitch{--accent:rgba(150,90,220,.22)}
 
-    .icon-box {
-      width: 54px;
-      height: 54px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 28px;
-      border: 1px solid rgba(255,255,255,.17);
-      border-radius: 18px;
-      background: rgba(255,255,255,.15);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.13),
-        0 8px 18px rgba(0,0,0,.12);
-      font-size: 27px;
+    .card-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
     }
 
-    .icon-box svg {
-      width: 28px;
-      height: 28px;
-      display: block;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.9;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .icon-box{
+      width:55px;
+      height:55px;
+      display:grid;
+      place-items:center;
+      border:1px solid rgba(255,255,255,.11);
+      border-radius:18px;
+      background:rgba(255,255,255,.055);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
     }
 
-    .icon-box .fill {
-      fill: currentColor;
-      stroke: none;
+    .icon-box svg{
+      width:27px;
+      height:27px;
+      fill:none;
+      stroke:#f4f4f5;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round;
     }
 
-    .card-title {
-      margin: 0 0 6px;
-      font-size: 19px;
-      line-height: 1.1;
-      font-weight: 820;
-      letter-spacing: -.025em;
+    .icon-box svg .fill{
+      fill:#f4f4f5;
+      stroke:none;
     }
 
-    .card-desc {
-      margin: 0;
-      max-width: 95%;
-      color: rgba(255,255,255,.82);
-      font-size: 12.5px;
-      line-height: 1.38;
+    .arrow{
+      padding-top:3px;
+      color:#85858e;
+      font-size:25px;
+      line-height:1;
+      transition:transform .18s ease,color .18s ease;
     }
 
-    .arrow {
-      position: absolute;
-      top: 16px;
-      right: 17px;
-      font-size: 25px;
-      opacity: .74;
-      transition: transform .18s ease;
+    .card:hover .arrow{
+      transform:translateX(3px);
+      color:#fff;
     }
 
-    .card:hover .arrow {
-      transform: translateX(3px);
+    .card-copy{
+      padding-top:28px;
     }
 
-    .install {
-      margin-top: 18px;
-      padding: 17px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      background: var(--surface);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
+    .card-title{
+      margin:0 0 6px;
+      font-size:19px;
+      line-height:1.1;
+      font-weight:800;
+      letter-spacing:-.025em;
     }
 
-    .install.visible {
-      display: flex;
-      animation: fadeUp .4s ease both;
+    .card-desc{
+      margin:0;
+      max-width:95%;
+      color:#93939c;
+      font-size:12.5px;
+      line-height:1.42;
     }
 
-    .install-copy strong {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 13px;
+    .install{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-top:18px;
+      padding:16px;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:rgba(255,255,255,.035);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
     }
 
-    .install-copy span {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.35;
+    .install.visible{
+      display:flex;
+      animation:fadeUp .4s ease both;
     }
 
-    .install-btn {
-      flex: 0 0 auto;
-      border: 0;
-      border-radius: 999px;
-      padding: 9px 13px;
-      background: white;
-      color: #09090b;
-      font: inherit;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
+    .install-copy strong{
+      display:block;
+      margin-bottom:3px;
+      font-size:13px;
     }
 
-
-    .update-banner {
-      margin-top: 18px;
-      padding: 15px 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: var(--radius-lg);
-      background: rgba(255,255,255,.055);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
+    .install-copy span{
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.35;
     }
 
-    .update-banner.visible {
-      display: flex;
-      animation: fadeUp .4s ease both;
+    .install-btn{
+      flex:0 0 auto;
+      border:0;
+      border-radius:999px;
+      padding:9px 13px;
+      background:#f4f4f5;
+      color:#08080a;
+      font:inherit;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
     }
 
-    .update-copy strong {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 13px;
+    .footer{
+      padding:28px 4px 3px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color:#53535c;
+      font-size:10px;
+      letter-spacing:.03em;
     }
 
-    .update-copy span {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.35;
+    .footer-mark{
+      font-weight:800;
+      letter-spacing:.13em;
     }
 
-    .update-btn {
-      flex: 0 0 auto;
-      border: 0;
-      border-radius: 999px;
-      padding: 9px 13px;
-      background: #f4f4f5;
-      color: #09090b;
-      font: inherit;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(10px)}
+      to{opacity:1;transform:translateY(0)}
     }
 
-    .update-btn:focus-visible {
-      outline: 3px solid rgba(255,255,255,.9);
-      outline-offset: 4px;
+    @keyframes cardIn{
+      from{opacity:0;transform:translateY(14px) scale(.98)}
+      to{opacity:1;transform:translateY(0) scale(1)}
     }
 
-    .footer {
-      padding: 28px 3px 4px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--muted-2);
-      font-size: 10px;
-      letter-spacing: .03em;
+    @media(max-width:360px){
+      .grid{grid-template-columns:1fr}
+      .card{min-height:150px}
+      .card-copy{padding-top:20px}
     }
 
-    .footer-mark {
-      font-weight: 800;
-      letter-spacing: .12em;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(14px) scale(.98); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @media (max-width: 360px) {
-      .grid { grid-template-columns: 1fr; }
-      .card { min-height: 145px; }
-      .icon-box { margin-bottom: 18px; }
-    }
-
-    @media (min-width: 700px) {
-      .app { width: min(100%, 720px); }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        animation: none !important;
-        transition: none !important;
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{
+        animation:none!important;
+        transition:none!important;
       }
     }
   </style>
 </head>
 
 <body>
+
+  <div class="splash" id="splash" aria-hidden="true">
+    <div class="splash-logo">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8.2 5.8c0-1.1 1.2-1.8 2.1-1.2l8.4 6c.8.6.8 1.8 0 2.4l-8.4 6c-.9.6-2.1 0-2.1-1.2z"/>
+      </svg>
+    </div>
+  </div>
+
   <main class="app">
     <header class="header">
-      <div class="status-row">
-        <div class="badge">
-          <span class="badge-dot"></span>
+      <div class="topline">
+        <div class="brand">
+          <span class="brand-dot"></span>
           Streaming
         </div>
         <div class="connection" id="connectionStatus">En línea</div>
       </div>
 
       <h1>¿Qué vemos?</h1>
-      <p class="subtitle">Tus accesos de entretenimiento en un solo sitio.</p>
+      <p class="subtitle">Tus accesos de entretenimiento, sin ruido.</p>
     </header>
 
-    <div class="section-title">Tus accesos</div>
+    <div class="section-label">Destacados</div>
 
     <nav class="grid" aria-label="Servicios de streaming">
+
       <a class="card football" href="https://www.fctv33hd.fun/es" aria-label="Abrir fútbol">
-        <span class="arrow" aria-hidden="true">›</span>
-        <div class="icon-box" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="M9.2 9.1 12 7.2l2.8 1.9-1 3.2h-3.6z"/>
-            <path d="m7.1 5.9 2.1 3.2M16.9 5.9l-2.1 3.2M5.2 13.2l5 1.9M18.8 13.2l-5 1.9M8.7 19.1l1.5-4M15.3 19.1l-1.5-4"/>
-          </svg>
+        <div class="card-head">
+          <div class="icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M9.2 9.1 12 7.2l2.8 1.9-1 3.2h-3.6z"/>
+              <path d="m7.1 5.9 2.1 3.2M16.9 5.9l-2.1 3.2M5.2 13.2l5 1.9M18.8 13.2l-5 1.9M8.7 19.1l1.5-4M15.3 19.1l-1.5-4"/>
+            </svg>
+          </div>
+          <span class="arrow" aria-hidden="true">›</span>
         </div>
-        <h2 class="card-title">Fútbol</h2>
-        <p class="card-desc">Partidos y retransmisiones en directo.</p>
+
+        <div class="card-copy">
+          <h2 class="card-title">Fútbol</h2>
+          <p class="card-desc">Partidos y retransmisiones en directo.</p>
+        </div>
       </a>
 
       <a class="card series" href="https://series.ly/" aria-label="Abrir series y películas">
-        <span class="arrow" aria-hidden="true">›</span>
-        <div class="icon-box" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M4 8h16v11H4z"/>
-            <path d="M4 8 7 4h4L8 8m3 0 3-4h4l-3 4"/>
-            <path d="m10 11 5 3-5 3z" class="fill"/>
-          </svg>
+        <div class="card-head">
+          <div class="icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 8h16v11H4z"/>
+              <path d="M4 8 7 4h4L8 8m3 0 3-4h4l-3 4"/>
+              <path class="fill" d="m10 11 5 3-5 3z"/>
+            </svg>
+          </div>
+          <span class="arrow" aria-hidden="true">›</span>
         </div>
-        <h2 class="card-title">Series y pelis</h2>
-        <p class="card-desc">Series, películas y entretenimiento.</p>
+
+        <div class="card-copy">
+          <h2 class="card-title">Series y pelis</h2>
+          <p class="card-desc">Series, películas y entretenimiento.</p>
+        </div>
       </a>
 
       <a class="card youtube" href="https://www.youtube.com/" aria-label="Abrir YouTube">
-        <span class="arrow" aria-hidden="true">›</span>
-        <div class="icon-box" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <rect x="3.5" y="5.5" width="17" height="13" rx="3"/>
-            <path d="m10 9 5 3-5 3z" class="fill"/>
-          </svg>
+        <div class="card-head">
+          <div class="icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <rect x="3.5" y="5.5" width="17" height="13" rx="3"/>
+              <path class="fill" d="m10 9 5 3-5 3z"/>
+            </svg>
+          </div>
+          <span class="arrow" aria-hidden="true">›</span>
         </div>
-        <h2 class="card-title">YouTube</h2>
-        <p class="card-desc">Vídeos, música, directos y canales.</p>
+
+        <div class="card-copy">
+          <h2 class="card-title">YouTube</h2>
+          <p class="card-desc">Vídeos, música, directos y canales.</p>
+        </div>
       </a>
 
       <a class="card twitch" href="https://www.twitch.tv/" aria-label="Abrir Twitch">
-        <span class="arrow" aria-hidden="true">›</span>
-        <div class="icon-box" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M5 4h15v10l-4 4h-4l-3 2v-2H5z"/>
-            <path d="M10 8v4M15 8v4"/>
-          </svg>
+        <div class="card-head">
+          <div class="icon-box" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 4h15v10l-4 4h-4l-3 2v-2H5z"/>
+              <path d="M10 8v4M15 8v4"/>
+            </svg>
+          </div>
+          <span class="arrow" aria-hidden="true">›</span>
         </div>
-        <h2 class="card-title">Twitch</h2>
-        <p class="card-desc">Directos, gaming y creadores.</p>
+
+        <div class="card-copy">
+          <h2 class="card-title">Twitch</h2>
+          <p class="card-desc">Directos, gaming y creadores.</p>
+        </div>
       </a>
+
     </nav>
 
     <section class="install" id="installPanel" aria-live="polite">
@@ -498,14 +535,6 @@
       <button class="install-btn" id="installBtn" type="button">Instalar</button>
     </section>
 
-    <section class="update-banner" id="updateBanner" aria-live="polite">
-      <div class="update-copy">
-        <strong>Nueva versión disponible</strong>
-        <span>Actualiza para cargar los últimos cambios.</span>
-      </div>
-      <button class="update-btn" id="updateBtn" type="button">Actualizar</button>
-    </section>
-
     <footer class="footer">
       <span class="footer-mark">STREAMING</span>
       <span id="appMode">Web app</span>
@@ -513,14 +542,19 @@
   </main>
 
   <script>
+    const splash = document.getElementById("splash");
     const connectionStatus = document.getElementById("connectionStatus");
     const installPanel = document.getElementById("installPanel");
     const installBtn = document.getElementById("installBtn");
-    const updateBanner = document.getElementById("updateBanner");
-    const updateBtn = document.getElementById("updateBtn");
     const appMode = document.getElementById("appMode");
 
-    function updateConnection() {
+    // Splash corto, tipo app nativa.
+    window.addEventListener("load", () => {
+      setTimeout(() => splash.classList.add("hidden"), 420);
+    });
+
+    // Estado de conexión.
+    function updateConnection(){
       connectionStatus.textContent = navigator.onLine ? "En línea" : "Sin conexión";
     }
 
@@ -528,26 +562,33 @@
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
 
+    // Detecta si ya está instalada.
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone === true;
 
-    if (standalone) {
+    if(standalone){
       appMode.textContent = "Modo app";
     }
 
+    // Instalación Android / Chrome compatibles.
     let deferredPrompt = null;
 
-    window.addEventListener("beforeinstallprompt", (event) => {
+    window.addEventListener("beforeinstallprompt", event => {
       event.preventDefault();
       deferredPrompt = event;
-      if (!standalone) installPanel.classList.add("visible");
+
+      if(!standalone){
+        installPanel.classList.add("visible");
+      }
     });
 
     installBtn.addEventListener("click", async () => {
-      if (!deferredPrompt) return;
+      if(!deferredPrompt) return;
+
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
+
       deferredPrompt = null;
       installPanel.classList.remove("visible");
     });
@@ -557,43 +598,35 @@
       appMode.textContent = "Modo app";
     });
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", async () => {
-        try {
-          const registration = await navigator.serviceWorker.register("./sw.js");
+    // Sensación de transición nativa antes de salir.
+    document.querySelectorAll(".card").forEach(card => {
+      card.addEventListener("click", event => {
+        if(
+          event.metaKey ||
+          event.ctrlKey ||
+          event.shiftKey ||
+          event.altKey ||
+          event.button !== 0
+        ) return;
 
-          registration.addEventListener("updatefound", () => {
-            const newWorker = registration.installing;
-            if (!newWorker) return;
+        event.preventDefault();
 
-            newWorker.addEventListener("statechange", () => {
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
-                updateBanner.classList.add("visible");
-              }
-            });
-          });
+        const target = card.href;
+        card.classList.add("leaving");
 
-          updateBtn.addEventListener("click", () => {
-            if (registration.waiting) {
-              registration.waiting.postMessage({ type: "SKIP_WAITING" });
-            } else {
-              window.location.reload();
-            }
-          });
+        setTimeout(() => {
+          window.location.href = target;
+        }, 115);
+      });
+    });
 
-          navigator.serviceWorker.addEventListener("controllerchange", () => {
-            window.location.reload();
-          });
-
-          registration.update();
-        } catch (error) {
-          console.error("Service Worker:", error);
-        }
+    // Service Worker.
+    if("serviceWorker" in navigator){
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(console.error);
       });
     }
   </script>
+
 </body>
 </html>
