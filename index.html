@@ -453,79 +453,7 @@
 
     <div class="section-label">Destacados</div>
 
-    <nav class="grid" aria-label="Servicios de streaming">
-
-      <a class="card football" href="https://www.fctv33hd.fun/es" aria-label="Abrir fútbol">
-        <div class="card-head">
-          <div class="icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="9"/>
-              <path d="M9.2 9.1 12 7.2l2.8 1.9-1 3.2h-3.6z"/>
-              <path d="m7.1 5.9 2.1 3.2M16.9 5.9l-2.1 3.2M5.2 13.2l5 1.9M18.8 13.2l-5 1.9M8.7 19.1l1.5-4M15.3 19.1l-1.5-4"/>
-            </svg>
-          </div>
-          <span class="arrow" aria-hidden="true">›</span>
-        </div>
-
-        <div class="card-copy">
-          <h2 class="card-title">Fútbol</h2>
-          <p class="card-desc">Partidos y retransmisiones en directo.</p>
-        </div>
-      </a>
-
-      <a class="card series" href="https://series.ly/" aria-label="Abrir series y películas">
-        <div class="card-head">
-          <div class="icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M4 8h16v11H4z"/>
-              <path d="M4 8 7 4h4L8 8m3 0 3-4h4l-3 4"/>
-              <path class="fill" d="m10 11 5 3-5 3z"/>
-            </svg>
-          </div>
-          <span class="arrow" aria-hidden="true">›</span>
-        </div>
-
-        <div class="card-copy">
-          <h2 class="card-title">Series y pelis</h2>
-          <p class="card-desc">Series, películas y entretenimiento.</p>
-        </div>
-      </a>
-
-      <a class="card youtube" href="https://www.youtube.com/" aria-label="Abrir YouTube">
-        <div class="card-head">
-          <div class="icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <rect x="3.5" y="5.5" width="17" height="13" rx="3"/>
-              <path class="fill" d="m10 9 5 3-5 3z"/>
-            </svg>
-          </div>
-          <span class="arrow" aria-hidden="true">›</span>
-        </div>
-
-        <div class="card-copy">
-          <h2 class="card-title">YouTube</h2>
-          <p class="card-desc">Vídeos, música, directos y canales.</p>
-        </div>
-      </a>
-
-      <a class="card twitch" href="https://www.twitch.tv/" aria-label="Abrir Twitch">
-        <div class="card-head">
-          <div class="icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 4h15v10l-4 4h-4l-3 2v-2H5z"/>
-              <path d="M10 8v4M15 8v4"/>
-            </svg>
-          </div>
-          <span class="arrow" aria-hidden="true">›</span>
-        </div>
-
-        <div class="card-copy">
-          <h2 class="card-title">Twitch</h2>
-          <p class="card-desc">Directos, gaming y creadores.</p>
-        </div>
-      </a>
-
-    </nav>
+    <nav class="grid" id="servicesGrid" aria-label="Servicios de streaming"></nav>
 
     <section class="install" id="installPanel" aria-live="polite">
       <div class="install-copy">
@@ -547,6 +475,100 @@
     const installPanel = document.getElementById("installPanel");
     const installBtn = document.getElementById("installBtn");
     const appMode = document.getElementById("appMode");
+    const servicesGrid = document.getElementById("servicesGrid");
+
+    // =========================================================
+    // SERVICIOS
+    // Para añadir o cambiar un acceso, edita SOLO este bloque.
+    // =========================================================
+    const services = [
+      {
+        name: "Fútbol",
+        description: "Partidos y retransmisiones en directo.",
+        url: "https://www.fctv33hd.fun/es",
+        type: "football",
+        icon: "football"
+      },
+      {
+        name: "Series y pelis",
+        description: "Series, películas y entretenimiento.",
+        url: "https://series.ly/",
+        type: "series",
+        icon: "movies"
+      },
+      {
+        name: "YouTube",
+        description: "Vídeos, música, directos y canales.",
+        url: "https://www.youtube.com/",
+        type: "youtube",
+        icon: "youtube"
+      },
+      {
+        name: "Twitch",
+        description: "Directos, gaming y creadores.",
+        url: "https://www.twitch.tv/",
+        type: "twitch",
+        icon: "twitch"
+      }
+    ];
+
+    const icons = {
+      football: `
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.2 9.1 12 7.2l2.8 1.9-1 3.2h-3.6z"/>
+          <path d="m7.1 5.9 2.1 3.2M16.9 5.9l-2.1 3.2M5.2 13.2l5 1.9M18.8 13.2l-5 1.9M8.7 19.1l1.5-4M15.3 19.1l-1.5-4"/>
+        </svg>
+      `,
+      movies: `
+        <svg viewBox="0 0 24 24">
+          <path d="M4 8h16v11H4z"/>
+          <path d="M4 8 7 4h4L8 8m3 0 3-4h4l-3 4"/>
+          <path class="fill" d="m10 11 5 3-5 3z"/>
+        </svg>
+      `,
+      youtube: `
+        <svg viewBox="0 0 24 24">
+          <rect x="3.5" y="5.5" width="17" height="13" rx="3"/>
+          <path class="fill" d="m10 9 5 3-5 3z"/>
+        </svg>
+      `,
+      twitch: `
+        <svg viewBox="0 0 24 24">
+          <path d="M5 4h15v10l-4 4h-4l-3 2v-2H5z"/>
+          <path d="M10 8v4M15 8v4"/>
+        </svg>
+      `,
+      play: `
+        <svg viewBox="0 0 24 24">
+          <path class="fill" d="M8.2 5.8c0-1.1 1.2-1.8 2.1-1.2l8.4 6c.8.6.8 1.8 0 2.4l-8.4 6c-.9.6-2.1 0-2.1-1.2z"/>
+        </svg>
+      `
+    };
+
+    function renderServices() {
+      servicesGrid.innerHTML = services.map(service => `
+        <a
+          class="card ${service.type || ""}"
+          href="${service.url}"
+          aria-label="Abrir ${service.name}"
+        >
+          <div class="card-head">
+            <div class="icon-box" aria-hidden="true">
+              ${icons[service.icon] || icons.play}
+            </div>
+            <span class="arrow" aria-hidden="true">›</span>
+          </div>
+
+          <div class="card-copy">
+            <h2 class="card-title">${service.name}</h2>
+            <p class="card-desc">${service.description}</p>
+          </div>
+        </a>
+      `).join("");
+    }
+
+    renderServices();
 
     // Splash corto, tipo app nativa.
     window.addEventListener("load", () => {
