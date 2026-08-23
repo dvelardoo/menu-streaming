@@ -267,9 +267,35 @@
       border-radius:var(--radius-xl);
       margin-bottom:14px;
       background:
-        linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.018) 45%),
-        radial-gradient(circle at 85% 82%,rgba(47,160,92,.23),transparent 34%),
-        #0a0a0c;
+        linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,.16) 45%,rgba(0,0,0,.68) 100%),
+        radial-gradient(ellipse at 18% 5%,rgba(255,255,255,.20) 0 1%,rgba(255,255,255,.055) 8%,transparent 25%),
+        radial-gradient(ellipse at 82% 6%,rgba(255,255,255,.16) 0 1%,rgba(255,255,255,.045) 8%,transparent 24%),
+        linear-gradient(165deg,transparent 42%,rgba(41,119,72,.16) 70%,rgba(21,73,43,.22) 100%),
+        #09090b;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      left:-8%;
+      right:-8%;
+      bottom:-42%;
+      height:70%;
+      z-index:-1;
+      border-radius:50% 50% 0 0;
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(255,255,255,.018) 0 1px,
+          transparent 1px 42px
+        ),
+        linear-gradient(180deg,rgba(55,125,78,.10),rgba(11,35,21,.20));
+      border-top:1px solid rgba(255,255,255,.055);
+      transform:perspective(300px) rotateX(54deg);
+      transform-origin:center top;
+      filter:blur(.15px);
+      opacity:.9;
+      pointer-events:none;
     }
 
     .hero .glow{
@@ -337,12 +363,30 @@
     }
 
     .hero-kicker{
+      display:flex;
+      align-items:center;
+      gap:7px;
       margin:0 0 8px;
       color:#b6b6bd;
       font-size:11px;
       font-weight:800;
       letter-spacing:.08em;
       text-transform:uppercase;
+    }
+
+    .live-dot{
+      width:6px;
+      height:6px;
+      flex:0 0 auto;
+      border-radius:50%;
+      background:#d8d8dc;
+      box-shadow:0 0 10px rgba(255,255,255,.45);
+      animation:livePulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes livePulse{
+      0%,100%{opacity:.55;transform:scale(.9)}
+      50%{opacity:1;transform:scale(1)}
     }
 
     .hero-title{
@@ -372,9 +416,28 @@
       border-radius:24px;
       margin-bottom:22px;
       background:
-        linear-gradient(140deg,rgba(255,255,255,.065),rgba(255,255,255,.018)),
-        radial-gradient(circle at 88% 90%,rgba(121,82,196,.19),transparent 36%),
+        linear-gradient(90deg,rgba(0,0,0,.02),rgba(0,0,0,.30)),
+        radial-gradient(ellipse at 78% 18%,rgba(168,146,205,.12),transparent 30%),
+        linear-gradient(118deg,transparent 54%,rgba(255,255,255,.035) 54.5%,transparent 55.5%),
+        linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.014)),
         #0b0b0e;
+    }
+
+    .feature::before{
+      content:"";
+      position:absolute;
+      width:150px;
+      height:150px;
+      right:-54px;
+      top:-82px;
+      z-index:-1;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.045);
+      box-shadow:
+        0 0 0 18px rgba(255,255,255,.012),
+        0 0 0 36px rgba(255,255,255,.008);
+      opacity:.9;
+      pointer-events:none;
     }
 
     .feature-icon,
@@ -520,6 +583,41 @@
       cursor:pointer;
     }
 
+    .app.ready .header{
+      animation:homeIn .48s .02s var(--ease) both;
+    }
+
+    .app.ready .section-label{
+      animation:homeIn .42s .07s var(--ease) both;
+    }
+
+    .app.ready .hero{
+      animation:homeIn .52s .10s var(--ease) both;
+    }
+
+    .app.ready .feature{
+      animation:homeIn .52s .16s var(--ease) both;
+    }
+
+    .app.ready .small-card:nth-child(1){
+      animation:homeIn .48s .22s var(--ease) both;
+    }
+
+    .app.ready .small-card:nth-child(2){
+      animation:homeIn .48s .27s var(--ease) both;
+    }
+
+    @keyframes homeIn{
+      from{
+        opacity:0;
+        transform:translateY(12px) scale(.99);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+    }
+
     .footer{
       padding:24px 3px 3px;
       display:flex;
@@ -581,7 +679,7 @@
 
     <div class="section-label">Ahora</div>
 
-    <a class="interactive-card hero" href="https://www.fctv33hd.fun/es" aria-label="Abrir fútbol">
+    <a class="interactive-card hero" href="https://www.fctv33hd.fun/es" aria-label="Abrir deportes">
       <span class="glow" aria-hidden="true"></span>
 
       <div class="hero-top">
@@ -596,9 +694,9 @@
       </div>
 
       <div class="hero-copy">
-        <p class="hero-kicker">En directo</p>
-        <h2 class="hero-title">Fútbol</h2>
-        <p class="hero-desc">Partidos y retransmisiones en directo.</p>
+        <p class="hero-kicker"><span class="live-dot" aria-hidden="true"></span>En directo</p>
+        <h2 class="hero-title">Deportes</h2>
+        <p class="hero-desc">Partidos, eventos y retransmisiones en directo.</p>
       </div>
     </a>
 
