@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
   <title>Streaming</title>
+
   <meta name="description" content="Tus accesos rápidos de streaming en una sola app.">
   <meta name="theme-color" content="#000000">
 
+  <!-- PWA / iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Streaming">
@@ -15,6 +17,7 @@
   <link rel="manifest" href="./manifest.json">
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+
   <link rel="preload" href="./icons/icon-512.png" as="image">
   <link rel="preload" href="./assets/deportes-bg.webp" as="image">
   <link rel="preload" href="./assets/series-bg.webp" as="image">
@@ -22,13 +25,13 @@
   <style>
     :root{
       --bg:#000;
-      --surface:#0b0b0d;
-      --line:rgba(255,255,255,.11);
       --text:#fff;
-      --muted:#a0a0a8;
-      --muted-2:#606068;
+      --muted:#a8a8b0;
+      --muted-2:#66666e;
+      --line:rgba(255,255,255,.11);
       --ease:cubic-bezier(.2,.8,.2,1);
       --page-x:18px;
+      --max:1240px;
     }
 
     *{
@@ -37,31 +40,32 @@
     }
 
     html{
-      color-scheme:dark;
-      background:#000;
       min-height:100%;
+      background:#000;
+      color-scheme:dark;
     }
 
     body{
       margin:0;
       min-height:100vh;
       min-height:100dvh;
+      overflow-x:hidden;
       background:
-        radial-gradient(circle at 50% -10%, rgba(255,255,255,.065), transparent 24%),
+        radial-gradient(circle at 50% -10%, rgba(255,255,255,.06), transparent 28%),
         #000;
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      overflow-x:hidden;
     }
 
     .app{
-      width:min(100%,520px);
+      width:min(100%, 500px);
       margin:0 auto;
       padding:
         max(20px,env(safe-area-inset-top))
         max(var(--page-x),env(safe-area-inset-right))
-        max(32px,env(safe-area-inset-bottom))
+        max(30px,env(safe-area-inset-bottom))
         max(var(--page-x),env(safe-area-inset-left));
+
       opacity:0;
       transform:translateY(8px);
       transition:opacity .5s ease,transform .5s var(--ease);
@@ -72,7 +76,7 @@
       transform:none;
     }
 
-    /* Splash */
+    /* SPLASH */
     .splash{
       position:fixed;
       inset:0;
@@ -104,13 +108,13 @@
       100%{transform:scale(1)}
     }
 
-    /* Header */
+    /* HEADER */
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:14px;
-      margin-bottom:28px;
+      margin-bottom:30px;
     }
 
     .brand{
@@ -125,29 +129,28 @@
       height:42px;
       border-radius:13px;
       overflow:hidden;
+      flex:0 0 auto;
       border:1px solid rgba(255,255,255,.10);
       box-shadow:0 8px 26px rgba(0,0,0,.42);
-      flex:0 0 auto;
     }
 
     .brand-icon img{
       width:100%;
       height:100%;
-      object-fit:cover;
       display:block;
+      object-fit:cover;
     }
 
     .brand-name{
+      color:#e2e2e7;
       font-size:12px;
       font-weight:800;
       letter-spacing:.22em;
       text-transform:uppercase;
-      color:#dedee3;
-      white-space:nowrap;
     }
 
     .status{
-      color:#676770;
+      color:var(--muted-2);
       font-size:11px;
     }
 
@@ -159,13 +162,13 @@
       margin:0;
       font-size:clamp(42px,12vw,58px);
       line-height:.98;
-      letter-spacing:-.055em;
       font-weight:850;
+      letter-spacing:-.055em;
     }
 
     .subtitle{
       margin:10px 0 0;
-      color:#9a9aa2;
+      color:#9d9da5;
       font-size:15px;
       line-height:1.45;
     }
@@ -189,7 +192,7 @@
       background:linear-gradient(90deg,rgba(255,255,255,.10),transparent);
     }
 
-    /* Shared card */
+    /* CARDS */
     .card{
       position:relative;
       display:block;
@@ -203,7 +206,11 @@
         0 24px 60px rgba(0,0,0,.45),
         inset 0 1px 0 rgba(255,255,255,.05);
       transform:translateZ(0);
-      transition:transform .18s var(--ease),filter .18s ease,border-color .18s ease;
+      transition:
+        transform .18s var(--ease),
+        filter .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
     }
 
     .card:active{
@@ -222,95 +229,22 @@
       outline-offset:4px;
     }
 
-    .card::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:-1;
-      background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.72));
-      pointer-events:none;
-    }
-
-    /* Sports hero */
-    .sports-card{
-      min-height:410px;
+    .sports-card,
+    .cinema-card{
       border-radius:30px;
+      background-repeat:no-repeat;
+      background-size:cover;
+    }
+
+    /* DEPORTES */
+    .sports-card{
+      min-height:380px;
       padding:22px;
-      background:
-        linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.20) 34%,rgba(0,0,0,.82) 100%),
-        linear-gradient(90deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.18) 58%,rgba(0,0,0,.08) 100%),
-        url("./assets/deportes-bg.webp") center/cover no-repeat,
-        #07090a;
-    }
-
-    .sports-card::before{
-      content:"";
-      position:absolute;
-      left:-8%;
-      right:-8%;
-      bottom:-20%;
-      height:54%;
-      z-index:-1;
-      border-radius:50% 50% 0 0;
-      background:
-        linear-gradient(90deg,
-          transparent 0 14%,
-          rgba(255,255,255,.07) 14% 14.5%,
-          transparent 14.5% 49.7%,
-          rgba(255,255,255,.06) 49.7% 50.2%,
-          transparent 50.2% 85.5%,
-          rgba(255,255,255,.07) 85.5% 86%,
-          transparent 86%
-        ),
-        linear-gradient(180deg,
-          transparent 0 47%,
-          rgba(255,255,255,.06) 47% 47.5%,
-          transparent 47.5%
-        ),
-        linear-gradient(180deg,rgba(54,130,78,.18),rgba(12,37,21,.35));
-      transform:perspective(330px) rotateX(57deg);
-      transform-origin:center top;
-      border-top:1px solid rgba(255,255,255,.08);
-      opacity:0;
-    }
-
-    .stadium{
-      position:absolute;
-      inset:0;
-      z-index:-1;
-      pointer-events:none;
-      display:none;
-    }
-
-    .stadium::before{
-      content:"";
-      position:absolute;
-      left:7%;
-      right:7%;
-      top:20%;
-      height:25%;
-      background:
-        repeating-linear-gradient(
-          90deg,
-          rgba(255,255,255,.05) 0 2px,
-          transparent 2px 14px
-        );
-      opacity:.24;
-      filter:blur(.6px);
-      mask-image:linear-gradient(to bottom,black,transparent);
-    }
-
-    .stadium::after{
-      content:"";
-      position:absolute;
-      right:8%;
-      bottom:29%;
-      width:82px;
-      height:38px;
-      border:2px solid rgba(255,255,255,.16);
-      border-bottom:0;
-      border-radius:3px 3px 0 0;
-      opacity:.7;
+      background-image:
+        linear-gradient(90deg,rgba(0,0,0,.76) 0%,rgba(0,0,0,.34) 46%,rgba(0,0,0,.08) 100%),
+        linear-gradient(180deg,rgba(0,0,0,.04) 0%,rgba(0,0,0,.10) 42%,rgba(0,0,0,.72) 100%),
+        url("./assets/deportes-bg.webp");
+      background-position:58% center;
     }
 
     .icon-circle{
@@ -336,7 +270,13 @@
       stroke-linejoin:round;
     }
 
-    .sports-copy{
+    .icon-circle .fill{
+      fill:#fff;
+      stroke:none;
+    }
+
+    .sports-copy,
+    .cinema-copy{
       position:absolute;
       left:22px;
       right:22px;
@@ -352,7 +292,7 @@
       font-weight:850;
       letter-spacing:.09em;
       text-transform:uppercase;
-      color:#e5e5e9;
+      color:#e7e7eb;
     }
 
     .live-dot{
@@ -371,7 +311,7 @@
 
     .sports-title{
       margin:0 0 10px;
-      font-size:38px;
+      font-size:36px;
       line-height:.95;
       font-weight:900;
       letter-spacing:-.05em;
@@ -380,8 +320,8 @@
 
     .sports-desc{
       margin:0 0 18px;
-      max-width:300px;
-      color:#b1b1b8;
+      max-width:310px;
+      color:#b2b2ba;
       font-size:14px;
       line-height:1.45;
     }
@@ -409,61 +349,21 @@
       transform:translateY(-1px);
     }
 
-    /* Cinema */
+    /* SERIES Y PELIS */
     .cinema-card{
-      min-height:280px;
-      border-radius:28px;
+      min-height:285px;
+      margin-top:14px;
       padding:20px;
-      background:
-        linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.36) 48%,rgba(0,0,0,.12) 100%),
-        linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.56)),
-        url("./assets/series-bg.webp") center/cover no-repeat,
-        #080a0c;
-    }
-
-    .cinema-card::before{
-      content:"";
-      position:absolute;
-      right:10%;
-      bottom:13%;
-      width:112px;
-      height:126px;
-      z-index:-1;
-      background:
-        linear-gradient(90deg,
-          transparent 0 10%,
-          rgba(255,255,255,.09) 10% 13%,
-          transparent 13% 87%,
-          rgba(255,255,255,.09) 87% 90%,
-          transparent 90%
-        ),
-        linear-gradient(180deg,
-          transparent 0 16%,
-          rgba(255,255,255,.08) 16% 19%,
-          transparent 19% 48%,
-          rgba(255,255,255,.08) 48% 51%,
-          transparent 51%
-        );
-      opacity:0;
-      transform:skewY(-3deg);
-    }
-
-    .cinema-card::after{
-      background:
-        radial-gradient(circle at 85% 16%,rgba(255,255,255,.08),transparent 18%),
-        linear-gradient(180deg,rgba(0,0,0,.03),rgba(0,0,0,.70));
-    }
-
-    .cinema-copy{
-      position:absolute;
-      left:20px;
-      right:20px;
-      bottom:20px;
+      background-image:
+        linear-gradient(90deg,rgba(0,0,0,.80) 0%,rgba(0,0,0,.43) 48%,rgba(0,0,0,.10) 100%),
+        linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.62)),
+        url("./assets/series-bg.webp");
+      background-position:62% center;
     }
 
     .cinema-title{
       margin:0 0 8px;
-      font-size:30px;
+      font-size:29px;
       line-height:.98;
       font-weight:900;
       letter-spacing:-.045em;
@@ -472,13 +372,13 @@
 
     .cinema-desc{
       margin:0 0 16px;
-      max-width:250px;
-      color:#ababB3;
+      max-width:260px;
+      color:#b0b0b8;
       font-size:13px;
       line-height:1.42;
     }
 
-    /* Small cards */
+    /* SMALL */
     .small-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -486,39 +386,38 @@
     }
 
     .small-card{
-      min-height:185px;
-      border-radius:24px;
+      min-height:170px;
       padding:16px;
+      border-radius:24px;
     }
 
     .youtube-card{
       background:
-        radial-gradient(circle at 28% 26%,rgba(171,38,38,.28),transparent 26%),
+        radial-gradient(circle at 28% 26%,rgba(170,35,35,.26),transparent 27%),
         linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.012)),
         #0a0808;
     }
 
     .twitch-card{
       background:
-        radial-gradient(circle at 30% 28%,rgba(113,67,178,.30),transparent 27%),
+        radial-gradient(circle at 30% 28%,rgba(111,65,176,.28),transparent 27%),
         linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.012)),
         #09080d;
     }
 
     .small-icon{
-      width:52px;
-      height:52px;
+      width:50px;
+      height:50px;
       display:grid;
       place-items:center;
       border-radius:50%;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.05);
-      box-shadow:0 10px 28px rgba(0,0,0,.32);
     }
 
     .small-icon svg{
-      width:26px;
-      height:26px;
+      width:25px;
+      height:25px;
       fill:none;
       stroke:#fff;
       stroke-width:1.8;
@@ -579,68 +478,22 @@
       text-transform:uppercase;
     }
 
+    /* MOVIL */
     @media(max-width:390px){
       :root{--page-x:14px}
-      .sports-card{min-height:380px}
-      .sports-title{font-size:34px}
-      .cinema-card{min-height:255px}
-      .small-card{min-height:170px}
-    }
 
-    @media(max-width:340px){
-      .small-grid{grid-template-columns:1fr}
-      .small-card{min-height:150px}
-    }
-
-    @media(prefers-reduced-motion:reduce){
-      *,*::before,*::after{
-        animation:none!important;
-        transition:none!important;
-      }
-    }
-  </style>
-
-  <style>
-    /* V9 responsive: mobile-first + desktop cinematic */
-    .app{
-      width:min(100%,500px);
-    }
-
-    .sports-card{
-      min-height:390px;
-      background-position:center;
-    }
-
-    .cinema-card{
-      min-height:270px;
-      background-position:center;
-    }
-
-    @media (max-width: 390px){
       .sports-card{
-        min-height:365px;
-        background-position:58% center;
-      }
-
-      .cinema-card{
-        min-height:250px;
+        min-height:360px;
         background-position:62% center;
-      }
-
-      .sports-copy{
-        left:18px;
-        right:18px;
-        bottom:18px;
       }
 
       .sports-title{
         font-size:33px;
       }
 
-      .cinema-copy{
-        left:18px;
-        right:18px;
-        bottom:18px;
+      .cinema-card{
+        min-height:250px;
+        background-position:67% center;
       }
 
       .cinema-title{
@@ -652,26 +505,23 @@
       }
     }
 
-    @media (min-width: 760px){
-      body{
-        background:
-          radial-gradient(circle at 50% -15%,rgba(255,255,255,.07),transparent 30%),
-          #000;
+    @media(max-width:340px){
+      .small-grid{
+        grid-template-columns:1fr;
       }
 
+      .small-card{
+        min-height:145px;
+      }
+    }
+
+    /* DESKTOP */
+    @media(min-width:760px){
       .app{
-        width:min(calc(100% - 48px),1240px);
+        width:min(calc(100% - 48px),var(--max));
         max-width:none;
         padding-left:24px;
         padding-right:24px;
-      }
-
-      .topbar{
-        margin-bottom:30px;
-      }
-
-      .intro{
-        margin-bottom:22px;
       }
 
       h1{
@@ -679,37 +529,31 @@
       }
 
       .sports-card{
-        min-height:330px;
+        min-height:340px;
         padding:28px;
-        border-radius:30px;
-        background-position:center 54%;
+        background-position:center 55%;
       }
 
       .sports-copy{
         left:28px;
         bottom:28px;
-        max-width:360px;
+        max-width:380px;
       }
 
       .sports-title{
         font-size:42px;
       }
 
-      .sports-desc{
-        max-width:320px;
-      }
-
       .cinema-card{
-        min-height:280px;
+        min-height:300px;
         padding:28px;
-        border-radius:28px;
-        background-position:center 52%;
+        background-position:center 55%;
       }
 
       .cinema-copy{
         left:28px;
         bottom:28px;
-        max-width:330px;
+        max-width:340px;
       }
 
       .cinema-title{
@@ -725,18 +569,18 @@
         padding:20px;
       }
 
-      .small-copy{
-        left:92px;
-        right:58px;
-        bottom:50%;
-        transform:translateY(50%);
-      }
-
       .small-icon{
         position:absolute;
         left:20px;
         top:50%;
         transform:translateY(-50%);
+      }
+
+      .small-copy{
+        left:92px;
+        right:58px;
+        bottom:50%;
+        transform:translateY(50%);
       }
 
       .small-arrow{
@@ -746,17 +590,13 @@
       }
     }
 
-    @media (min-width: 1100px){
-      .sports-card{
-        min-height:350px;
-      }
-
-      .cinema-card{
-        min-height:300px;
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{
+        animation:none!important;
+        transition:none!important;
       }
     }
   </style>
-
 </head>
 
 <body>
@@ -786,8 +626,6 @@
     </header>
 
     <a class="card sports-card" href="https://www.fctv33hd.fun/es" aria-label="Abrir deportes">
-      <span class="stadium" aria-hidden="true"></span>
-
       <div class="icon-circle" aria-hidden="true">
         <svg viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="9"/>
@@ -898,12 +736,14 @@
     });
 
     function updateConnection(){
-      connectionStatus.textContent = navigator.onLine ? "En línea" : "Sin conexión";
+      connectionStatus.textContent =
+        navigator.onLine ? "En línea" : "Sin conexión";
     }
 
     updateConnection();
-    window.addEventListener("online",updateConnection);
-    window.addEventListener("offline",updateConnection);
+
+    window.addEventListener("online", updateConnection);
+    window.addEventListener("offline", updateConnection);
 
     function resetCards(){
       document.querySelectorAll(".card").forEach(card => {
@@ -914,16 +754,20 @@
       app.classList.add("ready");
     }
 
-    window.addEventListener("pageshow",event => {
-      if(event.persisted) resetCards();
+    window.addEventListener("pageshow", event => {
+      if(event.persisted){
+        resetCards();
+      }
     });
 
-    document.addEventListener("visibilitychange",() => {
-      if(document.visibilityState === "visible") resetCards();
+    document.addEventListener("visibilitychange", () => {
+      if(document.visibilityState === "visible"){
+        resetCards();
+      }
     });
 
     document.querySelectorAll(".card").forEach(card => {
-      card.addEventListener("click",event => {
+      card.addEventListener("click", event => {
         if(
           event.metaKey ||
           event.ctrlKey ||
@@ -960,13 +804,13 @@
 
           await registration.update();
 
-          document.addEventListener("visibilitychange",() => {
+          document.addEventListener("visibilitychange", () => {
             if(document.visibilityState === "visible"){
               registration.update().catch(() => {});
             }
           });
 
-          navigator.serviceWorker.addEventListener("controllerchange",() => {
+          navigator.serviceWorker.addEventListener("controllerchange", () => {
             if(reloading) return;
             reloading = true;
             window.location.reload();
