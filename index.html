@@ -708,11 +708,39 @@
       });
     });
 
-    // Service Worker.
-    if("serviceWorker" in navigator){
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(console.error);
-      });
+    // Service Worker + actualización automática.
+    if ("serviceWorker" in navigator) {
+      let reloading = false;
+
+      async function registerAndUpdateServiceWorker() {
+        try {
+          const registration = await navigator.serviceWorker.register("./sw.js", {
+            updateViaCache: "none"
+          });
+
+          // Comprueba si hay una nueva versión del SW al abrir la app.
+          await registration.update();
+
+          // Y vuelve a comprobar cuando regresamos a la app.
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+              registration.update().catch(() => {});
+            }
+          });
+
+          // Si entra en control un SW nuevo, recarga una sola vez.
+          navigator.serviceWorker.addEventListener("controllerchange", () => {
+            if (reloading) return;
+            reloading = true;
+            window.location.reload();
+          });
+
+        } catch (error) {
+          console.error("Service Worker:", error);
+        }
+      }
+
+      window.addEventListener("load", registerAndUpdateServiceWorker);
     }
   </script>
 
