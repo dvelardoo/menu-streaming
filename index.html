@@ -16,6 +16,8 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
   <link rel="preload" href="./icons/icon-512.png" as="image">
+  <link rel="preload" href="./assets/deportes-bg.webp" as="image">
+  <link rel="preload" href="./assets/series-bg.webp" as="image">
 
   <style>
     :root{
@@ -235,11 +237,9 @@
       border-radius:30px;
       padding:22px;
       background:
-        linear-gradient(180deg,rgba(0,0,0,.02) 0%,rgba(0,0,0,.08) 28%,rgba(0,0,0,.72) 100%),
-        radial-gradient(ellipse at 50% 8%,rgba(255,255,255,.20),transparent 18%),
-        radial-gradient(ellipse at 20% 12%,rgba(255,255,255,.11),transparent 18%),
-        radial-gradient(ellipse at 80% 12%,rgba(255,255,255,.09),transparent 18%),
-        linear-gradient(165deg,transparent 48%,rgba(39,115,66,.24) 75%,rgba(12,42,24,.30) 100%),
+        linear-gradient(180deg,rgba(0,0,0,.08) 0%,rgba(0,0,0,.20) 34%,rgba(0,0,0,.82) 100%),
+        linear-gradient(90deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,.18) 58%,rgba(0,0,0,.08) 100%),
+        url("./assets/deportes-bg.webp") center/cover no-repeat,
         #07090a;
     }
 
@@ -271,7 +271,7 @@
       transform:perspective(330px) rotateX(57deg);
       transform-origin:center top;
       border-top:1px solid rgba(255,255,255,.08);
-      opacity:.9;
+      opacity:0;
     }
 
     .stadium{
@@ -279,6 +279,7 @@
       inset:0;
       z-index:-1;
       pointer-events:none;
+      display:none;
     }
 
     .stadium::before{
@@ -414,9 +415,9 @@
       border-radius:28px;
       padding:20px;
       background:
-        linear-gradient(90deg,rgba(0,0,0,.04),rgba(0,0,0,.54)),
-        radial-gradient(circle at 82% 22%,rgba(214,194,164,.16),transparent 18%),
-        linear-gradient(155deg,rgba(25,38,50,.23),transparent 48%),
+        linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.36) 48%,rgba(0,0,0,.12) 100%),
+        linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.56)),
+        url("./assets/series-bg.webp") center/cover no-repeat,
         #080a0c;
     }
 
@@ -443,7 +444,7 @@
           rgba(255,255,255,.08) 48% 51%,
           transparent 51%
         );
-      opacity:.45;
+      opacity:0;
       transform:skewY(-3deg);
     }
 
