@@ -167,6 +167,21 @@
       transform:translateY(0);
     }
 
+    .app.resuming{
+      animation:resumeIn .28s ease both;
+    }
+
+    @keyframes resumeIn{
+      from{
+        opacity:.88;
+        transform:translateY(4px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
     .header{
       padding:12px 3px 24px;
     }
@@ -353,6 +368,7 @@
       box-shadow:
         0 10px 28px rgba(0,0,0,.5),
         inset 0 1px 0 rgba(255,255,255,.05);
+      pointer-events:none;
     }
 
     .card:focus-visible,
@@ -794,12 +810,59 @@
       });
     });
 
-    // Splash corto, tipo app nativa.
+    // Splash solo en una apertura "real".
+    // Si volvemos atrás desde un servicio, no lo repetimos.
+    const hasOpenedThisSession =
+      sessionStorage.getItem("streaming-opened") === "1";
+
     window.addEventListener("load", () => {
+      if (hasOpenedThisSession) {
+        splash.classList.add("hidden");
+        app.classList.add("ready");
+        return;
+      }
+
+      sessionStorage.setItem("streaming-opened", "1");
+
       setTimeout(() => {
         splash.classList.add("hidden");
         app.classList.add("ready");
       }, 650);
+    });
+
+    function resetInterfaceAfterReturn() {
+      document.querySelectorAll(".card").forEach(card => {
+        card.classList.remove("leaving", "interacting");
+        card.style.setProperty("--mx", "50%");
+        card.style.setProperty("--my", "50%");
+        card.style.setProperty("--tilt-x", "0deg");
+        card.style.setProperty("--tilt-y", "0deg");
+      });
+
+      splash.classList.add("hidden");
+      app.classList.add("ready");
+
+      app.classList.remove("resuming");
+      void app.offsetWidth;
+      app.classList.add("resuming");
+
+      setTimeout(() => {
+        app.classList.remove("resuming");
+      }, 320);
+    }
+
+    // Safari/iOS suele restaurar la página desde bfcache al volver atrás.
+    window.addEventListener("pageshow", event => {
+      if (event.persisted) {
+        resetInterfaceAfterReturn();
+      }
+    });
+
+    // Respaldo para cuando la app vuelve del segundo plano.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        resetInterfaceAfterReturn();
+      }
     });
 
     // Estado de conexión.
@@ -866,6 +929,12 @@
         setTimeout(() => {
           window.location.href = target;
         }, 145);
+
+        // Seguridad: si la navegación no llega a ocurrir,
+        // la tarjeta vuelve a su estado normal.
+        setTimeout(() => {
+          card.classList.remove("leaving", "interacting");
+        }, 1200);
       });
     });
 
